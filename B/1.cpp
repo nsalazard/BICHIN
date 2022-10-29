@@ -5,11 +5,11 @@
 using namespace std;
 
 //---------- Constantes --------
-const int P = 8; //Numero de parámetros
+const int P = 8; //Numero de parámetros de los bichines
 const int L = 400; //Espacio 2L*2L
 const int K = 10;
 const double TMAX = 400;
-const int Ni = 1000;
+const int Ni = 10000;
 const int Nfood = 2;
 int Nlive = 2;
 int Energy = 0;
@@ -24,8 +24,8 @@ private:
   double x,y,m, E, H, R;
 	double moves[P];
 public:
-  void Move(double K, Crandom ran64);
-  void Feed(double food){E += food;};
+  void Move(double K, double prob);
+  //void Feed(double food){E += food;};
 	void Inicie(double x0,double y0,double E0,double m0, double R0);
   void Dibujese(void);
   double Getx(void){return x;}; //inline
@@ -40,6 +40,7 @@ void Bichin::Inicie(double x0,double y0,double E0,double m0, double R0){
 	R = R0;
 	E = E0;
   x = x0; y = y0;
+	//Genetica
 	moves[0] = 12.5; // East
 	moves[1] = 12.5; // North-East
 	moves[2] = 12.5; // North
@@ -50,8 +51,8 @@ void Bichin::Inicie(double x0,double y0,double E0,double m0, double R0){
 	moves[7] = 12.5; // South-East
 } 
 
-void Bichin::Move(double K, Crandom ran64){
-	double prob = 100*ran64.r();
+void Bichin::Move(double K, double prob){
+	//double prob = 100*ran64.r();
 	double min=0.0,max=0.0;
   for(int ii= 0; ii < (P-1); ii++ ){
 		min += moves[ii]; max = min + moves[ii+1];
@@ -105,12 +106,12 @@ void Food::Dibujese(void){
 class Selection{
 private:
 public:
-  void Birth(Bichin & BichoP,Bichin & BichoH, double t, int prob);
+  void Birth(Bichin & BichoP,Bichin & BichoH, double t, int prob, int prob2);
 	void RechargeFood(Food *food);
 friend class Food;
 };
 
-void Selection::Birth(Bichin & BichoP,Bichin & BichoH, double t,int prob){
+void Selection::Birth(Bichin & BichoP,Bichin & BichoH, double t,int prob,int prob2){
 		Nlive +=1;
 		BichoP.E = BichoP.E/2;
 		BichoH.Inicie(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R);
@@ -118,7 +119,8 @@ void Selection::Birth(Bichin & BichoP,Bichin & BichoH, double t,int prob){
 	for(int ii=0; ii < P; ii++){
 		BichoH.moves[ii] = BichoP.moves[ii];
 	}
-	BichoH.moves[prob] -=1; 
+	BichoH.moves[prob] -=1;
+	BichoH.moves[(prob2)%7] +=1;
 	//cout << BichoH.GetE() << "\n";
 }
 
@@ -161,8 +163,8 @@ int main(void){
 	int Ehijos = 100; //Min Energy for reproduction
 	double Thijos = 20; //Min Time for reproduction
 	double Rfood = 10;
-	double prob1, prob2;
-	int prob;
+	double prob;
+	int prob1,prob2;
 	
   //Inicializar los bichines
   Bichitos[0].Inicie(0, 0, 300, 1,R);
@@ -170,18 +172,19 @@ int main(void){
 
 	//Inicializar la comida
 	food[0].Inicie(-50,0,10000,Rfood,5);
-	food[1].Inicie(50,0, 10000, Rfood,10);
+	food[1].Inicie(50,0, 10000, Rfood,9);
 
 	InicieAnimacion(); //Dibujar
 
   for(double t=0, tdibujo=0; t<TMAX ; t+=1){  //Move  
     for(int ii=0; ii<Nlive; ii++){
 			if(Bichitos[ii].Alive()){ //Bichitos[ii].Alive()
-				prob1 = 100*ran64.r();
-				Bichitos[ii].Move(K, prob1);
+				prob = 100*ran64.r();
+				Bichitos[ii].Move(K, prob);
 				if(Bichitos[ii].GetE()>Ehijos && t > Thijos){
-				prob = int(P*ran64.r());
-				Fate.Birth(Bichitos[ii], Bichitos[Nlive], t, prob);
+				prob1 = int(P*ran64.r());
+				prob2 = int(P*ran64.r());
+				Fate.Birth(Bichitos[ii], Bichitos[Nlive], t, prob1, prob2);
 					}
 				// Get some food
 				for(int jj=0; jj< Nfood; jj++){
