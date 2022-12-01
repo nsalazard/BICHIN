@@ -111,7 +111,7 @@ void Bichin::Move(double K, double prob)
 
 void Bichin::Print(void)
 {
-    cout << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)";
+    cout << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt -1";
 }
 
 void Bichin::Blender(void)
@@ -160,7 +160,7 @@ void Food::Feed(Bichin &Bicho)
 
 void Food::Print(void)
 {
-    cout << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)";
+    cout << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt 7";
 }
 
 void Food::Blender(void)
