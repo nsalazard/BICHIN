@@ -1,3 +1,0 @@
-3_Fail es con comida constante
-3_NoChange con comida que solo pierde energia a medida que es comida jejeje
-3_Cool la energia perdida por el movimiento de las particulas se añade a la comida
