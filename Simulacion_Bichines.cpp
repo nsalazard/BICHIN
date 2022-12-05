@@ -30,7 +30,7 @@ class Bichin
 	{
 		private:
 			int t_live;  //tiempo de vida(# de movimientos) del bichin
-			double x, y, m, E, H, R;  
+			double x, y, m, E=0, H, R;  
 			double moves[P];  //Genes del bichin
 
 		public:
@@ -89,25 +89,17 @@ void Bichin::Move(double K, double prob)
 		if (prob >= min && prob < max)
 		{
 			x += (K * cos(ii * (M_PI / 4)));
-			//Condciones periodicas para x
-			if (x >= L)
-			{
-				x = -L;
-			}
-			else if (x <= -L)
-			{
-				x = L;
-			}
 			y += K * sin(ii * (M_PI / 4));
-			//Condiciones periodicas para y
-			if (y >= L)
-			{
-				y = -L;
-			}
-			else if (y <= -L)
-			{
-				x = L;
-			}
+			//Condciones periodicas para x
+			if (x>L)
+				{x=-L;}
+			else if(x<-L)
+				{x=L;}
+			if (y>L)
+				{y=-L;}
+			else if (y<-L)
+				{y=L;}
+
 			E -= 1;  //Disminuye la energía del bichin
 			Energy += 1;  //Aumenta la energía del sistema
 			t_live += 1;  //Aumenta el tiempo de vida del bichin
@@ -197,6 +189,17 @@ class Selection
 		void Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64);  //Distribuya la comida con una gausiana
 		void Uniform(Food *food, int N, double Rfood, Crandom &ran64);  //Distribuya la comida uniformemente
 		void RechargeFood(Food *food, Crandom &ran64); //Recargue la comida de manera aleatoria en el ambiente
+		double Biomass(Food *food, Bichin *Bichos)
+			{
+				int ii=0;
+				double total_biomass=0;
+				for(ii=0;ii<Ni;ii++)
+					{total_biomass+=Bichos[ii].GetE();};
+				for(ii=0;ii<Nfood;ii++)
+					{total_biomass+=food[ii].GetE();};
+				return total_biomass;
+
+			}
 		friend class Food;
 };
 
@@ -315,7 +318,7 @@ int main(void)
 		double prob;  										//variable auxiliar para mover bichines
 		int prob1, prob2;  								//variables auxiliares para las mutaciones
 
-		
+		double total_bio=0;
 
 		int qq=0;
 		bool Blive=false;
@@ -347,6 +350,8 @@ int main(void)
 
 		for (int t = 0, tdibujo = 0; t < TMAX; t ++)
 		{ 
+			total_bio=Fate.Biomass(food,Bichitos);
+			cout<<total_bio<<"\n";
 			for (int ii = 0; ii < Ni; ii++)  						//Para todos los bichines vivos
 			{
 				if (Bichitos[ii].Alive())  										//Si el bichin esta vivo
