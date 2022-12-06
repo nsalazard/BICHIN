@@ -14,16 +14,16 @@ const int L =300;           // Espacio 2L*2L
 const double K = 10;        // Distancia recorrida en cada mov. por el bichin
 const double TMAX = 500;		// Tiempo de dibujo
 const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
-const int Ni = 500; 					// Numero maximo de bichines (?)
+const int Ni = 1000; 					// Numero maximo de bichines (?)
 const int Nfood = 2000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
 double E_inicial = 10;  		// Energía inicial de la comida
-int Nlive = 30;  						// Numero inicial de bichines
+int Nlive = 60;  						// Numero inicial de bichines
 double Energy_bank = 0; 		// El banco temporal de energia
 double Biome_energy=19000;	// Evita un bug con el colocamiento de la comida
 														// Como buena practica  Biome_energy<Nfood*E_inicial; 
 														// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=1;	
-double mu = 0.0, sigma = L / 4;  	//Parámetros distribución gaussiana de comida
+double mu = 0.0, sigma = L / 8;  	//Parámetros distribución gaussiana de comida
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -82,6 +82,7 @@ class Bichin
 			double Gety(void) { return y; };      // inline
 			double GetE(void) { return E; };      // inline
 			double GetT(void) { return t_live; }; // inline
+			void T_zero(void) {t_live=0;};
 			void Genetic(Crandom &ran64)
 				{   
 					//LLena moves[] con porcentajes aleatorios tal que su suma de 1
@@ -216,7 +217,7 @@ class Selection
 void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob1, int prob2, Crandom &ran64)
 {
 
-	Nlive += 1; //Aumente el número de bichines vivos(que se dibujan)
+	Nlive += 1.; //Aumente el número de bichines vivos(que se dibujan)
 	BichoP.E = BichoP.E / 2; //Divida la energía del padre en 2
 	BichoH.Start(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R, ran64);//Inicialice al bichin hijo con la posición del padre, su energía (la mitad de la original), masa de 1, radio del padre y número aleatorio para determinar su genética(después se iguala a la del padre)
   
@@ -339,15 +340,16 @@ int main(void)
 		Selection Fate; 									//Nombre de clase Selection
 		Crandom ran64(1);  								//Semilla del generador aleatorio
 		double R = 5.0;  									//Radio del bichin
-		int Ehijos = 20;   							// Min Energy for reproduction
-		double Thijos = 800; 							// Min Time for reproduction
+		int Ehijos = 20;   								// Min Energy for reproduction
+		double Thijos = 20; 							// Min Time for reproduction
 		double Rfood = 2;  								//Radio de la comida
 		double prob;  										//variable auxiliar para mover bichines
 		int prob1, prob2;  								//variables auxiliares para las mutaciones
 
 		double total_bio=0,food_bio=0,Bichos_bio=0;
 
-		int qq=0,nn=0;
+		int qq=0,nn=0,Live_counter=0;
+		int ii = 0;
 		bool Blive=false;
 
 		// Inicializar los bichines
@@ -382,8 +384,9 @@ int main(void)
 			Bichos_bio=Fate.Bichos_Biomass(Bichitos);
 			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
 			//cout<<total_bio+Energy_bank<<"\n";
+			//cout<<t<<"//////////////////\n";
 			
-			for (int ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
+			for (ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
 				{	
 					if (Bichitos[ii].Alive())  										//Si el bichin esta vivo
 						{ nn++;
@@ -391,25 +394,31 @@ int main(void)
 																												
 							prob = ran64.r();  //Genere un número aleatorio
 							Bichitos[ii].Move(K, prob); //Muevase con ese numero
-					
 
 							if (Bichitos[ii].GetE() > Ehijos )  //Si el bichin cumple las 2 condiciones para reproducirse
+								{ 
+									if(Bichitos[ii].GetT()> Thijos)
+									{
+										prob1 = int(P * ran64.r());
+										prob2 = int(P * ran64.r());
+
+										Blive=false;
+
+										for(qq=0;qq<Ni;qq++)
+											{
+												Blive=Bichitos[qq].Alive();//Escoga a un nuevo bichin del array como hijo
+												if(!Blive){break;}
+											}
+											if(Blive){cout<<"Poblacion maxima \n";}
+
+										Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64);   
+										Bichitos[ii].T_zero();
+									}
+								}
+
+							if (Bichitos[ii].GetE() <=0.0 )
 								{
-									prob1 = int(P * ran64.r());
-									prob2 = int(P * ran64.r());
-
-									Blive=false;
-
-									for(qq=0;qq<Ni;qq++)
-										{
-											Blive=Bichitos[qq].Alive();//Escoga a un nuevo bichin del array como hijo
-											if(!Blive){break;}
-										}
-										if(Blive){cout<<"Poblacion maxima \n";}
-									cout<<"Hay un nacimiento \n"<<Nlive<<"\n";
-
-									Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64);   
-									cout<<Nlive<<"\n";
+									Nlive-=1.;
 								}
 
 
@@ -419,17 +428,11 @@ int main(void)
 								}
 							
 						}
-
+					
 				}
-
+			
 			InicieCuadro(); //Dibuje los bichines vivos y la comida viva
-			for (int ii = 0; ii < Ni; ii++)
-				{
-					if (Bichitos[ii].Alive())
-					{
-						Bichitos[ii].Print();
-					}
-				}
+			
 			for (int ii = 0; ii < Nfood; ii++)
 				{	
 					if (food[ii].GetE() > 0)
@@ -437,7 +440,15 @@ int main(void)
 						food[ii].Print();
 					}
 				}
-			//cout<<food[12].GetE()<<"-----\n";
+			for ( ii = 0,Live_counter=0; ii < Ni; ii++)
+				{
+					if (Bichitos[ii].Alive())
+					{
+						Bichitos[ii].Print();
+						Live_counter+=1;
+					}
+				}
+			cout<<Live_counter<<" "<<Nlive<<"\n";
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 		}
