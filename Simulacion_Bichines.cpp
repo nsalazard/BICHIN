@@ -350,6 +350,7 @@ int main(void)
 
 		int qq=0,nn=0,Live_counter=0;
 		int ii = 0;
+		int nacer=0;
 		bool Blive=false;
 
 		// Inicializar los bichines
@@ -378,15 +379,8 @@ int main(void)
 
 
 		for (int t = 0, tdibujo = 0; t < TMAX; t ++)
-		{ 
-			total_bio=Fate.Biomass(food,Bichitos);
-			food_bio=Fate.food_Biomass(food);
-			Bichos_bio=Fate.Bichos_Biomass(Bichitos);
-			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
-			//cout<<total_bio+Energy_bank<<"\n";
-			//cout<<t<<"//////////////////\n";
-			
-			for (ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
+		{ 	
+			for (ii = 0,nn=0,nacer=0; ii < Ni; ii++)  						//Para todos los bichines vivos
 				{	
 					if (Bichitos[ii].Alive())  										//Si el bichin esta vivo
 						{ nn++;
@@ -410,25 +404,26 @@ int main(void)
 												if(!Blive){break;}
 											}
 											if(Blive){cout<<"Poblacion maxima \n";}
-
-										Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64);   
+										
+										Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64); 
+										nacer++; 
 										Bichitos[ii].T_zero();
 									}
 								}
 
-							if (Bichitos[ii].GetE() <=0.0 )
-								{
-									Nlive-=1.;
-								}
+							
 
 
 							for (int jj = 0; jj < Nfood; jj++)
 								{   //Para toda la comida, revise si puede alimentarse con ella
 									food[jj].Feed(Bichitos[ii]);
 								}
-							
+							if (Bichitos[ii].GetE() <=0.0 )
+								{
+									Nlive-=1.;
+								}
 						}
-					
+					//cout<<"Nacimiento "<<nacer<<"\n";
 				}
 			
 			InicieCuadro(); //Dibuje los bichines vivos y la comida viva
