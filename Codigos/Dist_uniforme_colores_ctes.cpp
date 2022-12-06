@@ -17,7 +17,7 @@ const double E_gordo = 1500;//Energía a partir de la cual bichin no puede comer
 const int Ni = 1000; 		//Numero maximo de bichines (?)
 const int Nfood = 1000;  	//Numero de maximo comida 
 int Nlive = 10;  			//Numero inicial de bichines
-double Energy = 0; 			//Energía del sistema 
+double Energy_bank = 0; 			//Energía del sistema 
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -107,7 +107,7 @@ void Bichin::Move(double K, double prob)
 				x = L;
 			}
 			E -= 1;  //Disminuye la energía del bichin
-			Energy += 1;  //Aumenta la energía del sistema
+			Energy_bank += 1;  //Aumenta la energía del sistema
 			t_live += 1;  //Aumenta el tiempo de vida del bichin
 		}
 	}
@@ -137,7 +137,7 @@ public:
 	void Recharge(double newEnergy)  //Recargue la energía total del sistema
 	{
 		E += newEnergy;  //Aumente la energía de la comida en newEnergy
-		Energy = 0;  //Ponga la energía total del sistema en cero
+		Energy_bank = 0;  //Ponga la energía total del sistema en cero
 	};
 	friend class Selection;
 	friend class Bichin;
@@ -251,11 +251,11 @@ void Selection::RechargeFood(Food *food, Crandom &ran64)
 {
 	// salida << "Comida recargada "<<( Energy) << "\n";
 	int prob;
-	while (Energy > 0) //Mientras haya energía en el sistema
+	while (Energy_bank > 0) //Mientras haya energía en el sistema
 	{
 		prob = int(Nfood * ran64.r());  //Escoga una comida en el array de comidas
 		food[prob].E += 1; //Aumente su energía en 1
-		Energy -= 1;  //Disminuya la energía del sistema en 1
+		Energy_bank -= 1;  //Disminuya la energía del sistema en 1
 	}
 };
 
