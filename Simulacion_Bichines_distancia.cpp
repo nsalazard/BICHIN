@@ -216,6 +216,7 @@ class Selection
 					{total_biomass+=Bichos[ii].GetE();};
 				return total_biomass;
 			}	
+//<<<<<<< HEAD:Simulacion_Bichines.cpp
 		void food_distribution(Food *food,int Nfood,double mux,double muy,double sigmax, double sigmay, double Rfood,Crandom &ran64, int dis )
 			{
 				int ix, iy;
@@ -282,6 +283,14 @@ class Selection
 
 					}
 			}
+//=======
+    double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2){
+      double sum=0.0;
+      for(int ii=0; ii<P;ii++) sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);
+      return sum;
+    }
+
+//>>>>>>> dist_taxi:Simulacion_Bichines_distancia.cpp
 
 		friend class Food;
 };
