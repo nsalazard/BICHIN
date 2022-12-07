@@ -394,29 +394,29 @@ void Selection::RechargeFood(Food *food, Crandom &ran64)
 
 //----------------- Funciones de Animacion ----------
 void StartAnimacion(void)
-{
-	salida << "set terminal gif animate" << endl;
-	salida << "set output '3.gif'" << endl;
-	salida << "unset key" << endl;
-	salida << "set xrange[" << -L << ":" << L << "]" << endl;
-	salida << "set yrange[" << -L << ":" << L << "]" << endl;
-	salida << "set size ratio -1" << endl;
-	salida << "set parametric" << endl;
-	salida << "set trange [0:7]" << endl;
-	salida << "set isosamples 12" << endl;
-}
+	{
+		salida << "set terminal gif animate" << endl;
+		salida << "set output '3.gif'" << endl;
+		salida << "unset key" << endl;
+		salida << "set xrange[" << -L << ":" << L << "]" << endl;
+		salida << "set yrange[" << -L << ":" << L << "]" << endl;
+		salida << "set size ratio -1" << endl;
+		salida << "set parametric" << endl;
+		salida << "set trange [0:7]" << endl;
+		salida << "set isosamples 12" << endl;
+	}
 void InicieCuadro(void)
-{
-	salida << "plot 0,0 ";
-}
+	{
+		salida << "plot 0,0 ";
+	}
 void TermineCuadro(void)
-{
-	salida << endl;
-}
+	{
+		salida << endl;
+	}
 void StartBlender(int t)
-{
-	salida << t << "\t";
-}
+	{
+		salida << t << "\t";
+	}
 //-----------  Programa Principal --------------
 int main(void)
 	{	
