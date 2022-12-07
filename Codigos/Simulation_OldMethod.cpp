@@ -7,15 +7,17 @@
 #include <memory>
 using namespace std;
 ofstream salida;
-
+ofstream grafica;
+ofstream Nodes;
+ofstream Edges;
 //---------- Constantes --------
 const int P = 8;            // Numero de parámetros de los bichines
 const int L =700;           // Espacio 2L*2L
 const double K = 10;        // Distancia recorrida en cada mov. por el bichin
-const double TMAX = 50;//300;		// Tiempo de dibujo
+const double TMAX = 800;		//300;		// Tiempo de dibujo
 const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
-const int Ni = 10000; 				// Numero maximo de bichines (?)
-const int Nfood = 10000;//10000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
+const int Ni = 10000; 			// Numero maximo de bichines (?)
+const int Nfood = 20000;		//10000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
 int E_inicial = 30;  				// Energía inicial de la comida
 int Nlive = 30;  						// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
@@ -188,7 +190,7 @@ class Selection
 	private:
 	public:
 		void Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob, int prob2, Crandom &ran64);  //Reproduce un bicho Padre en 2 bichos Hijos teniend en cuenta el tiempo de vida del padre. prob determina el gen que disminuye, prob 2 el que aumenta
-		void Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64, int start, int end);  //Distribuya la comida con una gausiana
+		void Spread(Food *food, int N, double mux,double muy, double sigma, double Rfood, Crandom &ran64, int start, int end);  //Distribuya la comida con una gausiana
 		void Uniform(Food *food, int N, double Rfood, Crandom &ran64, int start, int end);  //Distribuya la comida uniformemente
 		void RechargeFood(Food *food, Crandom &ran64); //Recargue la comida de manera aleatoria en el ambiente
 		int Biomass(Food *food, Bichin *Bichos)
@@ -335,15 +337,15 @@ void Selection::Uniform(Food *food, int N, double Rfood, Crandom &ran64, int sta
 		}
 }
 
-void Selection::Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64, int start, int end)
+void Selection::Spread(Food *food, int N, double mux,double muy, double sigma, double Rfood, Crandom &ran64, int start, int end)
 {
 	int ix, iy;
 	int Ploted_energy=Biome_energy;
 	for (int ii = start; ii < end; ii++)  //Se distribuyen N comidas
 	{
 		// Escogemos posición de la comida al azar segun una distribucion bigaussiana
-		ix = (int)ran64.gauss(mu, sigma);
-		iy = (int)ran64.gauss(mu, sigma);
+		ix = (int)ran64.gauss(mux, sigma);
+		iy = (int)ran64.gauss(muy, sigma);
 		// Evitamos las fronteras del ambiente
 		if (ix < -L)
 			ix = -L;
@@ -412,6 +414,7 @@ void StartBlender(int t)
 int main(void)
 	{	
 		salida.open("console_out.gp");
+		grafica.open("poblacion.txt");
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
 		Selection Fate; 									//Nombre de clase Selection
@@ -442,8 +445,8 @@ int main(void)
 
 		if(food_dis==0)
 			{Fate.Uniform(food, int(Nfood/4), Rfood, ran64, 0, int(Nfood/4));
-				Fate.Spread(food, int(Nfood/8),mu,sigma, Rfood, ran64, int(Nfood/4), int(Nfood/4)+ int(Nfood/8));
-				Fate.Spread(food, int(Nfood/8),-mu,sigma, Rfood, ran64, int(Nfood/4)+ int(Nfood/8), int(Nfood/2));} //Distribuya Nfood(food maxima) con distribución uniforme}
+				Fate.Spread(food, int(Nfood/8),0,mu,sigma, Rfood, ran64, int(Nfood/4), int(Nfood/4)+ int(Nfood/8));
+				Fate.Spread(food, int(Nfood/8),0,-mu,sigma, Rfood, ran64, int(Nfood/4)+ int(Nfood/8), int(Nfood/2));} //Distribuya Nfood(food maxima) con distribución uniforme}
 
 		
 		StartAnimacion(); // Dibujar
@@ -514,9 +517,12 @@ int main(void)
 					}
 				}
 			//cout<<food[12].GetE()<<"-----\n";
+			grafica<<t<<" "<<Nlive<<"\n";
+			//cout<<Nlive<<"\n";
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 		}
 		salida.close();
+		grafica.close();
 		return 0;
 	}
