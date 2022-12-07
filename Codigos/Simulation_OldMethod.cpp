@@ -1,3 +1,7 @@
+#define _USE_MATH_DEFINES 
+#include <iostream>
+#include <cmath>
+#include "Random64.h"
 #include <fstream>
 #include <exception>
 #include <memory>
@@ -8,7 +12,7 @@ ofstream salida;
 const int P = 8;            // Numero de parámetros de los bichines
 const int L =700;           // Espacio 2L*2L
 const double K = 10;        // Distancia recorrida en cada mov. por el bichin
-const double TMAX = 500;//300;		// Tiempo de dibujo
+const double TMAX = 50;//300;		// Tiempo de dibujo
 const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
 const int Ni = 10000; 				// Numero maximo de bichines (?)
 const int Nfood = 10000;//10000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
@@ -19,7 +23,7 @@ int Biome_energy=20000;			// Evita un bug con el colocamiento de la comida
 														// Como buena practica  Biome_energy<Nfood*E_inicial; 
 														// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=0;	
-double mu = 0.0, sigma = L / 4;  	//Parámetros distribución gaussiana de comida
+double mu = L/2, sigma = L / 7;  	//Parámetros distribución gaussiana de comida
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -438,8 +442,9 @@ int main(void)
 
 
 		if(food_dis==0)
-			{Fate.Uniform(food, int(Nfood/2), Rfood, ran64, 0, int(Nfood/4));
-				Fate.Spread(food, int(Nfood/2),mu,sigma, Rfood, ran64, int(Nfood/4), int(Nfood/2));} //Distribuya Nfood(food maxima) con distribución uniforme}
+			{Fate.Uniform(food, int(Nfood/4), Rfood, ran64, 0, int(Nfood/4));
+				Fate.Spread(food, int(Nfood/8),mu,sigma, Rfood, ran64, int(Nfood/4), int(Nfood/4)+ int(Nfood/8));
+				Fate.Spread(food, int(Nfood/8),-mu,sigma, Rfood, ran64, int(Nfood/4)+ int(Nfood/8), int(Nfood/2));} //Distribuya Nfood(food maxima) con distribución uniforme}
 
 		
 		StartAnimacion(); // Dibujar
