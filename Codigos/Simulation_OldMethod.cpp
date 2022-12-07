@@ -102,9 +102,8 @@ class Bichin
 					for (int ii = 0; ii < P; ii++)
 					{
 						moves[ii] = moves[ii] / sum;
-						cout << moves[ii] << "\t"<< "F" << "\t";
+
 					}
-						cout << "\n";
 					
 					theta=2*M_PI*int(7*ran64.r());
 				} 
