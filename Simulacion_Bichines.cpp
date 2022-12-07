@@ -12,6 +12,7 @@ ofstream salida;
 const int P = 8;            // Numero de parámetros de los bichines
 const int L =700;           // Espacio 2L*2L
 const double K = 10;        // Distancia recorrida en cada mov. por el bichin
+
 const double TMAX = 1000;		// Tiempo de dibujo
 const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
 const int Ni = 1000; 				// Numero maximo de bichines (?)
@@ -20,10 +21,11 @@ int E_inicial = 10;  				// Energía inicial de la comida
 int Nlive = 80;  						// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
 int Biome_energy=20000;			// Evita un bug con el colocamiento de la comida
+
 														// Como buena practica  Biome_energy<Nfood*E_inicial; 
 														// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=1;	
-double mu = 0.0, sigma = L / 4;  	//Parámetros distribución gaussiana de comida
+double mu = 0.0, sigma = L / 8;  	//Parámetros distribución gaussiana de comida
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -46,6 +48,7 @@ class Bichin
 					//DE ACUERDO AL INTERVALO ENTRE 0 Y 1 AL QUE prob CORRESPONDA, SE INCREMENTA (x,y) en determinada dirección
 					double min = 0.0, max = 0.0;
 					for (int ii = 0; ii < P; ii++)
+
 						{    
 							if(ii>0) min += moves[ii-1]; 
 							max = min + moves[ii];
@@ -288,10 +291,12 @@ class Selection
 
 void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob1, int prob2, Crandom &ran64)
 {
+
 	Nlive += 1; //Aumente el número de bichines vivos(que se dibujan)
 	int E_original=BichoP.E;
 	
 	BichoP.E = int(BichoP.E / 2); //Divida la energía del padre en 2
+
 	BichoH.Start(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R, ran64);//Inicialice al bichin hijo con la posición del padre, su energía (la mitad de la original), masa de 1, radio del padre y número aleatorio para determinar su genética(después se iguala a la del padre)
 
 	//cout<<E_original<<" "<<BichoP.E+BichoH.E<<"-----\n";
@@ -335,7 +340,9 @@ void Selection::Uniform(Food *food, int N, double Rfood, Crandom &ran64)
 void Selection::Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64)
 {
 	int ix, iy;
+
 	int Ploted_energy=Biome_energy;
+
 	for (int ii = 0; ii < N; ii++)  //Se distribuyen N comidas
 	{
 		// Escogemos posición de la comida al azar segun una distribucion bigaussiana
@@ -360,7 +367,9 @@ void Selection::Spread(Food *food, int N, double mu, double sigma, double Rfood,
 void Selection::RechargeFood(Food *food, Crandom &ran64)
 {
 	int index=0;
+
 	int Cn=0;
+
 	while (Energy_bank>E_inicial)
 		{	
 			//cout<<"ciclo\n";
@@ -425,7 +434,9 @@ int main(void)
 
 		int total_bio=0,food_bio=0,Bichos_bio=0;
 
-		int qq=0,nn=0;
+		int qq=0,nn=0,Live_counter=0;
+		int ii = 0;
+		int nacer=0;
 		bool Blive=false;
 
 		// Inicializar los bichines
@@ -446,7 +457,7 @@ int main(void)
 			{Fate.Spread(food, int(Nfood/2),mu,sigma, Rfood, ran64);}
 		else
 			{
-				cout<<"No se ha escogido una distribucion, linea 301"<<endl;
+				cout<<"No se ha escogido una distribucion, linea 25"<<endl;
 				return 0;
 			};
 		
@@ -454,6 +465,7 @@ int main(void)
 
 
 		for (int t = 0, tdibujo = 0; t < TMAX; t ++)
+
 		{ 
 			//total_bio=Fate.Biomass(food,Bichitos);
 			//food_bio=Fate.food_Biomass(food);
@@ -484,8 +496,8 @@ int main(void)
 									}
 									if(Blive){cout<<"Poblacion maxima \n";}
 
-								Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64);   //Escoga a un nuevo bichin del array como hijo
-							}
+
+							
 
 
 						for (int jj = 0; jj < Nfood; jj++)
@@ -499,8 +511,9 @@ int main(void)
 						if(nn==Nlive)
 							{break;};
 					}
-				}
 
+				}
+			
 			InicieCuadro(); //Dibuje los bichines vivos y la comida viva
 
 			for (int ii = 0; ii < Nfood; ii++)
@@ -510,14 +523,18 @@ int main(void)
 						food[ii].Print();
 					}
 				}
+
 			for (int ii = 0; ii < Ni; ii++)
+
 				{
 					if (Bichitos[ii].Alive())
 					{
 						Bichitos[ii].Print();
+
 					}
 				}
 			//cout<<food[12].GetE()<<"-----\n";
+
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 		}
