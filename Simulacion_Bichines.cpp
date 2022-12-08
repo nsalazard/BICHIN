@@ -13,16 +13,16 @@ ofstream Edges;
 
 //---------- Constantes --------
 const int P = 8;            // Numero de parámetros de los bichines
-const int L =500;           // Espacio 2L*2L
+const int L =700;           // Espacio 2L*2L
 const double K = 10;        // Distancia recorrida en cada mov. por el bichin
-const double TMAX = 2000;		// Tiempo de dibujo
+const double TMAX = 3000;	// Tiempo de dibujo
 const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
-const int Ni = 3000; 				// Numero maximo de bichines (?)
+const int Ni = 4000; 				// Numero maximo de bichines (?)
 const int Nfood = 10000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
 int E_inicial = 10;  				// Energía inicial de la comida
 int Nlive = 200;  						// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
-int Biome_energy=20000;			// Evita un bug con el colocamiento de la comida
+int Biome_energy=50000;			// Evita un bug con el colocamiento de la comida
 														// Como buena practica  Biome_energy<Nfood*E_inicial; 
 														// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=2;	
@@ -348,34 +348,75 @@ class Selection
 			}
     double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2){
       double sum=0.0;
-      for(int ii=0; ii<P;ii++) sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);
+      for(int ii=0; ii<P;ii++) 
+				{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
       return sum;
     }
 		void Genetic_Nodes(Bichin *Bichos)
 			{
+				Nodes<<"id,gen_predominante\n";
 				int ii=0,cc=0;
+				
+				string preferencia;
 				for(ii=0;ii<Ni;ii++)
 					{
 						if(Bichos[ii].Alive())
-							{
-								Nodes<<"B"<<ii<<";"<<Bichos[ii].Main_gene()<<"\n";
+							{	cc=Bichos[ii].Main_gene();
+								preferencia=Direction(cc);
+								Nodes<<"B"<<ii<<","<<preferencia<<"\n";
 							}
 
 					}
 			}	
-		void Genetic_Edges(Bichin *Bichos)
+		void Genetic_Edges(Bichin *Bichos, double threshold)
 			{
-				int ii=0,jj=0;
+				int ii=0,jj=0,kk=0;
 				double distancia=0;
+				double peso=0;
+				Edges<<"from,to,weight\n";
+
 				for(ii=0;ii<Ni;ii++)
 					{for(jj=ii+1;jj<Ni;jj++)
 						{
-							distancia=Dist_Taxi(Bichos[ii],Bichos[jj]);
-							Edges<<"B"<<ii<<";"<<"B"<<jj<<";"<<1.0/distancia<<"\n";
+							if(Bichos[ii].Alive() && Bichos[jj].Alive())
+								{
+								distancia=Dist_Taxi(Bichos[ii],Bichos[jj]);
+								peso=1/distancia;
+								if(distancia==0)
+									{peso=0;}
+
+								if(peso>threshold)
+									{Edges<<"B"<<ii<<","<<"B"<<jj<<","<<peso<<"\n";}
+								
+								
+								}
 						}
 					}
 			}
-					
+		string Direction(int dir)
+			{	
+				string pref;
+				if(dir==0)
+					{pref="F";}
+				else if(dir==1)
+					{pref="L1";}
+				else if(dir==2)
+					{pref="L2";}
+				else if(dir==3)
+					{pref="L3";}
+				else if(dir==4)
+					{pref="B";}
+				else if(dir==5)
+					{pref="R3";}
+				else if(dir==6)
+					{pref="R2";}
+				else if(dir==7)
+					{pref="R1";}
+				else
+					{pref="Error";
+					cout<<dir<<"Error en la asignacion de direccion preferencial\n";}
+				return pref;
+			}		
 			
 		friend class Food;
 };
@@ -524,7 +565,6 @@ int main(void)
 		bool Blive=false;
 		string name,name2;
 
-		// Inicializar los bichines
 		for (int jj = 0; jj < Nlive; jj++)
 			{
 				//Inicialice todos los bichines en el origen, 500 de energía, 1 de masa, radio R, ran64 para su genética
@@ -535,17 +575,7 @@ int main(void)
 				Bichitos[jj].Start(bix, biy, E_inicial, 1, R, ran64);
 			}
 
-		/*
-		if(food_dis==0)
-			{Fate.Uniform(food, int(Nfood/2), Rfood, ran64);} //Distribuya Nfood(food maxima) con distribución uniforme}
-		else if(food_dis==1)
-			{Fate.Spread(food, int(Nfood/2),mu,sigma, Rfood, ran64);}
-		else
-			{
-				cout<<"No se ha escogido una distribucion, linea 301"<<endl;
-				return 0;
-			};
-		*/
+
 
 
 		Fate.food_distribution(food,int(Nfood/2),L/4,-L/4,sigma*2,sigma*2,Rfood,ran64,food_dis);
@@ -560,6 +590,19 @@ int main(void)
 			//Bichos_bio=Fate.Bichos_Biomass(Bichitos);
 			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
 			//cout<<total_bio+Energy_bank<<"\n";
+
+			if(t%500==0)
+				{	
+					name="Nodos/Nodos"+to_string(t)+".csv";
+					Nodes.open(name);
+					Fate.Genetic_Nodes(Bichitos);
+					Nodes.close();
+					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado\n";
+					name2="Edges/Edges"+to_string(t)+".csv";
+					Edges.open(name2);
+					Fate.Genetic_Edges(Bichitos, 7);
+					Edges.close();
+				}
 			
 			for (int ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
 				{	
@@ -630,18 +673,7 @@ int main(void)
 
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
-			if(t%50==0)
-				{	
-					name="Nodos/Nodos"+to_string(t)+".txt";
-					Nodes.open(name);
-					Fate.Genetic_Nodes(Bichitos);
-					Nodes.close();
 
-					name2="Edges/Edges"+to_string(t)+".txt";
-					Edges.open(name2);
-					Fate.Genetic_Edges(Bichitos);
-					Edges.close();
-				}
 		}
 		salida.close();
 		grafica.close();
