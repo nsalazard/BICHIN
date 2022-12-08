@@ -1,7 +1,7 @@
 # BICHIN
 
 
-##USO
+## USO
 
 
 En tanto las Simulacion_Bichines.cpp, ya está terminada y funcional. Necesitamos correrla en diferentes escenarios y extraer los datos para análisis estadístico, el entorno de ejecución necesita Random64.h, 2 carpetas, Nodos, Edges. 
