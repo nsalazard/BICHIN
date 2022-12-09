@@ -198,7 +198,7 @@ class Food
 					{
 						double place= ran64.r();
 								place= ran64.r();
-								if(place>0.5)
+								if(place<0.5)
 									{
 										x =  2*L*ran64.r() - L;
 										y =  2*L*ran64.r() - L;
@@ -222,7 +222,7 @@ class Food
 					{
 						double place= ran64.r();
 								place= ran64.r();
-								if(place>0.5)
+								if(place<0.5)
 									{
 										x =  2*L*ran64.r() - L;
 										y =  2*L*ran64.r() - L;
