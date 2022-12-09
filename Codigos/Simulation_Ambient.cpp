@@ -205,8 +205,9 @@ class Food
 									}
 								else	
 									{	
-										x =  Franja + (2*50*ran64.r() - 50);
-										y =  2*L*ran64.r() - L;
+										if(place>0.75) {x =  Franja + (2*50*ran64.r() - 50);}
+										else  {x =  -Franja + (2*50*ran64.r() - 50);}
+											y =  2*L*ran64.r() - L;
 									}
 								if (x < -L)
 									{x = -L;}
@@ -230,7 +231,8 @@ class Food
 									{	
 										int Rf = Rcir + (2*50*ran64.r() - 50);
 										x = 2*Rf*ran64.r() - Rf;
-										y = sqrt(Rf*Rf - x*x);
+										if(place>0.75) {y = sqrt(Rf*Rf - x*x);}
+										else  {y = -1*sqrt(Rf*Rf - x*x);}
 									}
 								if (x < -L)
 									{x = -L;}
