@@ -435,7 +435,7 @@ class Selection
 				// H es una unidad sin dimensiones para cuantificar tasas evolutivas, https://earth.geology.yale.edu/~ajs/1993/11.1993.17Gingerich.pdf
 				
 				int gene=0;
-				Hald<<time<<" ";
+				Hald<<time<<" "<<Nlive<<" ";
 				for(gene=0;gene<P;gene++)
 					{
 						Hald<<Prom_gene(Bichos,gene)<<" "<<Std_gene(Bichos,gene)<<" ";
