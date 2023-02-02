@@ -435,9 +435,20 @@ void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob1, int p
 	{
 		BichoH.moves[ii] = BichoP.moves[ii];
 	}
+	if(BichoH.moves[prob1] > 0.01){
 	BichoH.moves[prob1] -= 0.01;  //Disminuya el gen prob
+	}
+/*  else{
+	for(int ii=0;ii<P; ii++){
+		if(BichoH.moves[ii] > 0.01){
+			BichoH.moves[ii] -= 0.01;  //Disminuya el gen ii
+			break;
+		}
+	}	
+     }
+
+*/
 	BichoH.moves[prob2] += 0.01;  //Aumente el gen prob2
-	
 }
 
 void Selection::Uniform(Food *food, int N, double Rfood, Crandom &ran64)
