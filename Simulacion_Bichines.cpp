@@ -10,22 +10,23 @@ ofstream salida;
 ofstream grafica;
 ofstream Nodes;
 ofstream Edges;
+ofstream Hald;
 
 //---------- Constantes --------
-const int P = 8;            // Numero de parámetros de los bichines
-const int L =700;           // Espacio 2L*2L
-const double K = 10;        // Distancia recorrida en cada mov. por el bichin
-const double TMAX = 3000;	// Tiempo de dibujo
-const double E_gordo = 50;	// Energía a partir de la cual bichin no puede comer
+const int P = 8;            		// Numero de parámetros de los bichines
+const int L =700;           		// Espacio 2L*2L
+const double K = 10;        		// Distancia recorrida en cada mov. por el bichin
+const double TMAX = 8000;			// Tiempo de dibujo
+const double E_gordo = 50;			// Energía a partir de la cual bichin no puede comer
 const int Ni = 4000; 				// Numero maximo de bichines (?)
-const int Nfood = 10000;  		// Numero de maximo comida | Nunca debe ser alcanzado.
+const int Nfood = 10000;  			// Numero de maximo comida | Nunca debe ser alcanzado.
 int E_inicial = 10;  				// Energía inicial de la comida
-int Nlive = 200;  						// Numero inicial de bichines
+int Nlive = 100;  					// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
-int Biome_energy=50000;			// Evita un bug con el colocamiento de la comida
-														// Como buena practica  Biome_energy<Nfood*E_inicial; 
-														// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
-int food_dis=2;	
+int Biome_energy=40000;				// Evita un bug con el colocamiento de la comida
+									// Como buena practica  Biome_energy<Nfood*E_inicial; 
+									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
+int food_dis=0;	
 double mu = 0.0, sigma = L / 4;  	//Parámetros distribución gaussiana de comida
 //--- ------ Clases ------------
 class Bichin;
@@ -125,6 +126,10 @@ class Bichin
 
 						}
 					return imax;
+				}
+			double Gene_value(int gene)
+				{
+					return moves[gene];
 				}
 			friend class Selection;
 			friend class Food;
@@ -346,7 +351,7 @@ class Selection
 
 					}
 			}
-    double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2){
+    	double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2){
       double sum=0.0;
       for(int ii=0; ii<P;ii++) 
 				{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
@@ -393,6 +398,53 @@ class Selection
 						}
 					}
 			}
+		double Prom_gene(Bichin *Bichos, int gene)
+			{
+				int oo=0;
+				double prom=0;
+				for(oo=0;oo<Nlive;oo++)
+					{
+						prom += Bichos[oo].Gene_value(gene);
+					}
+				prom=prom/Nlive;
+				return prom;
+				
+			}
+		double Std_gene(Bichin *Bichos, int gene)
+			{
+				double sd=0;// desviacion std
+				double prom=0;
+				double sum=0;
+				double val=0;
+				int oo=0;	//contador
+
+				prom=Prom_gene(Bichos,gene);
+
+				for(oo=0;oo<Nlive;oo++)
+					{	
+						val=Bichos[oo].Gene_value(gene)-prom;
+						sd+= val*val;
+
+					}
+				sd=sqrt(sd/Nlive);
+				return sd;
+
+			}
+		void Haldane(int time,Bichin *Bichos)
+			{	
+				// H es una unidad sin dimensiones para cuantificar tasas evolutivas, https://earth.geology.yale.edu/~ajs/1993/11.1993.17Gingerich.pdf
+				
+				int gene=0;
+				Hald<<time<<" "<<Nlive<<" ";
+				for(gene=0;gene<P;gene++)
+					{
+						Hald<<Prom_gene(Bichos,gene)<<" "<<Std_gene(Bichos,gene)<<" ";
+					}
+				Hald<<"\n";	
+
+
+			}
+
 		string Direction(int dir)
 			{	
 				string pref;
@@ -548,17 +600,18 @@ int main(void)
 	{	
 		salida.open("console_out.gp");
 		grafica.open("poblacion.txt");
+		Hald.open("Haldanes.txt");
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
-		Selection Fate; 									//Nombre de clase Selection
+		Selection Fate; 								//Nombre de clase Selection
 		Crandom ran64(1);  								//Semilla del generador aleatorio
-		double R = 5.0;  									//Radio del bichin
-		int Ehijos = 20;   								// Min Energy for reproduction
-		double Thijos = 40; 							// Min Time for reproduction
+		double R = 5.0;  								//Radio del bichin
+		int Ehijos = 20;   								//Min Energy for reproduction
+		double Thijos = 40; 							//Min Time for reproduction
 		double Rfood = 2;  								//Radio de la comida
-		double prob;  										//variable auxiliar para mover bichines
+		double prob;  									//variable auxiliar para mover bichines
 		int prob1, prob2;  								//variables auxiliares para las mutaciones
-
+		int gene=0;
 		int total_bio=0,food_bio=0,Bichos_bio=0;
 
 		int qq=0,nn=0,live_counter;
@@ -575,9 +628,6 @@ int main(void)
 				Bichitos[jj].Start(bix, biy, E_inicial, 1, R, ran64);
 			}
 
-
-
-
 		Fate.food_distribution(food,int(Nfood/2),L/4,-L/4,sigma*2,sigma*2,Rfood,ran64,food_dis);
 		
 		StartAnimacion(); // Dibujar
@@ -591,17 +641,19 @@ int main(void)
 			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
 			//cout<<total_bio+Energy_bank<<"\n";
 
-			if(t%500==0)
+			if(t%200==0)
 				{	
 					name="Nodos/Nodos"+to_string(t)+".csv";
 					Nodes.open(name);
-					Fate.Genetic_Nodes(Bichitos);
+					//Fate.Genetic_Nodes(Bichitos);
 					Nodes.close();
 					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado\n";
 					name2="Edges/Edges"+to_string(t)+".csv";
 					Edges.open(name2);
-					Fate.Genetic_Edges(Bichitos, 7);
+					//Fate.Genetic_Edges(Bichitos, 7);
 					Edges.close();
+					cout<<"std dev gen "<<gene<<": "<<Fate.Std_gene(Bichitos,gene)<<"\n";
+					Fate.Haldane(t,Bichitos);
 				}
 			
 			for (int ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
@@ -677,5 +729,6 @@ int main(void)
 		}
 		salida.close();
 		grafica.close();
+		Hald.close();
 		return 0;
 	}
