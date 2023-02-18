@@ -235,7 +235,7 @@ class Selection
 {
 	private:
 	public:
-		void Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob, int prob2, Crandom &ran64);  //Reproduce un bicho Padre en 2 bichos Hijos teniend en cuenta el tiempo de vida del padre. prob determina el gen que disminuye, prob 2 el que aumenta
+		void Birth(Bichin &BichoP, Bichin &BichoH, double t,Crandom &ran64);  //Reproduce un bicho Padre en 2 bichos Hijos teniend en cuenta el tiempo de vida del padre. prob determina el gen que disminuye, prob 2 el que aumenta
 		void Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64);  //Distribuya la comida con una gausiana
 		void Uniform(Food *food, int N, double Rfood, Crandom &ran64);  //Distribuya la comida uniformemente
 		void RechargeFood(Food *food, Crandom &ran64); //Recargue la comida de manera aleatoria en el ambiente
@@ -473,10 +473,13 @@ class Selection
 		friend class Food;
 };
 
-void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob1, int prob2, Crandom &ran64)
+void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, Crandom &ran64)
 {
 	Nlive += 1; //Aumente el número de bichines vivos(que se dibujan)
 	int E_original=BichoP.E;
+
+	int prob1= int(P * ran64.r());
+	int prob2= int(P * ran64.r());
 	
 	BichoP.E = int(BichoP.E / 2); //Divida la energía del padre en 2
 	BichoH.Start(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R, ran64);//Inicialice al bichin hijo con la posición del padre, su energía (la mitad de la original), masa de 1, radio del padre y número aleatorio para determinar su genética(después se iguala a la del padre)
@@ -487,9 +490,20 @@ void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, int prob1, int p
 	{
 		BichoH.moves[ii] = BichoP.moves[ii];
 	}
-	BichoH.moves[prob1] -= 0.01;  //Disminuya el gen prob
+	if(BichoH.moves[prob1] > 0.01){
+		BichoH.moves[prob1] -= 0.01;  //Disminuya el gen prob
+	}
+  else{
+	for(int ii=0;ii<P; ii++){
+		prob1= int(P * ran64.r());
+		if(BichoH.moves[prob1] > 0.01){
+			BichoH.moves[ii] -= 0.01;  //Disminuya el gen ii
+			break;
+		}
+	}	
+     }
+
 	BichoH.moves[prob2] += 0.01;  //Aumente el gen prob2
-	
 }
 
 void Selection::Uniform(Food *food, int N, double Rfood, Crandom &ran64)
@@ -574,7 +588,7 @@ void Selection::RechargeFood(Food *food, Crandom &ran64)
 void StartAnimacion(void)
 	{
 		salida << "set terminal gif animate" << endl;
-		salida << "set output '3.gif'" << endl;
+		salida << "set output 'Bichin.gif'" << endl;
 		salida << "unset key" << endl;
 		salida << "set xrange[" << -L << ":" << L << "]" << endl;
 		salida << "set yrange[" << -L << ":" << L << "]" << endl;
@@ -609,9 +623,11 @@ int main(void)
 		int Ehijos = 20;   								//Min Energy for reproduction
 		double Thijos = 40; 							//Min Time for reproduction
 		double Rfood = 2;  								//Radio de la comida
+
 		double prob;  									//variable auxiliar para mover bichines
 		int prob1, prob2;  								//variables auxiliares para las mutaciones
 		int gene=0;
+    
 		int total_bio=0,food_bio=0,Bichos_bio=0;
 
 		int qq=0,nn=0,live_counter;
@@ -668,9 +684,6 @@ int main(void)
 
 						if (Bichitos[ii].GetE() > Ehijos && Bichitos[ii].GetT() > Thijos &&  int(Bichitos[ii].GetE())%2==0)  //Si el bichin cumple las 2 condiciones para reproducirse
 							{
-								prob1 = int(P * ran64.r());
-								prob2 = int(P * ran64.r());
-
 								Blive=false;
 								for(qq=0;qq<Ni;qq++)
 									{
@@ -679,7 +692,7 @@ int main(void)
 									}
 									if(Blive){cout<<"Poblacion maxima \n";}
 
-								Fate.Birth(Bichitos[ii], Bichitos[qq], t, prob1, prob2, ran64);   //Escoga a un nuevo bichin del array como hijo
+								Fate.Birth(Bichitos[ii], Bichitos[qq], t, ran64);   //Escoga a un nuevo bichin del array como hijo
 							}
 
 
