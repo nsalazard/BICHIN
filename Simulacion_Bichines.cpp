@@ -26,8 +26,9 @@ int Energy_bank = 0; 				// El banco temporal de energia
 int Biome_energy=50000;				// Evita un bug con el colocamiento de la comida
 									// Como buena practica  Biome_energy<Nfood*E_inicial; 
 									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
-int food_dis=2;	
-double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
+const int food_dis=2;	
+const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
+const int selec = 0; 				// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -93,20 +94,25 @@ class Bichin
 			void T_zero(void) {t_live=0;};
 			void Genetic(Crandom &ran64)
 				{   
-					//LLena moves[] con porcentajes aleatorios tal que su suma de 1
-					int xx;
-					double sum = 0.0;
-					for (int ii = 0; ii < P; ii++)
-					{
-						xx = ran64.r() * 10.0;
-						moves[ii] = xx;
-						sum += moves[ii];
+					if(selec == 0){
+						for (int ii = 0; ii < P; ii++){
+							moves[ii] = 0.125;
+						}
 					}
-					for (int ii = 0; ii < P; ii++)
-					{
-						moves[ii] = moves[ii] / sum;
+					else{
+						//LLena moves[] con porcentajes aleatorios tal que su suma de 1
+						int xx;
+						double sum = 0.0;
+						for (int ii = 0; ii < P; ii++){
+							xx = ran64.r() * 10.0;
+							moves[ii] = xx;
+							sum += moves[ii];
+						}
+						for (int ii = 0; ii < P; ii++){
+							moves[ii] = moves[ii] / sum;
+						}
 					}
-					theta=2*M_PI*int(7*ran64.r());
+					theta=M_PI/2*int(P*ran64.r());
 				}
 			void Print(void);
 			void Blender(void);
