@@ -497,7 +497,7 @@ void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, Crandom &ran64)
 	for(int ii=0;ii<P; ii++){
 		prob1= int(P * ran64.r());
 		if(BichoH.moves[prob1] > 0.01){
-			BichoH.moves[ii] -= 0.01;  //Disminuya el gen ii
+			BichoH.moves[prob1] -= 0.01;  //Disminuya el gen ii
 			break;
 		}
 	}	
