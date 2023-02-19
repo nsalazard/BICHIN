@@ -16,18 +16,18 @@ ofstream Hald;
 const int P = 8;            		// Numero de parámetros de los bichines
 const int L =700;           		// Espacio 2L*2L
 const double K = 10;        		// Distancia recorrida en cada mov. por el bichin
-const double TMAX = 8000;			// Tiempo de dibujo
+const double TMAX = 40000;			// Tiempo de dibujo
 const double E_gordo = 50;			// Energía a partir de la cual bichin no puede comer
 const int Ni = 4000; 				// Numero maximo de bichines (?)
 const int Nfood = 10000;  			// Numero de maximo comida | Nunca debe ser alcanzado.
 int E_inicial = 10;  				// Energía inicial de la comida
 int Nlive = 100;  					// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
-int Biome_energy=40000;				// Evita un bug con el colocamiento de la comida
+int Biome_energy=50000;				// Evita un bug con el colocamiento de la comida
 									// Como buena practica  Biome_energy<Nfood*E_inicial; 
 									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
-int food_dis=0;	
-double mu = 0.0, sigma = L / 4;  	//Parámetros distribución gaussiana de comida
+int food_dis=2;	
+double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -195,8 +195,6 @@ class Food
 									{x = L;}
 								if (y > L)
 									{y = L;}
-
-							
 					}
 				
 				E=E0;
@@ -618,7 +616,7 @@ int main(void)
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
 		Selection Fate; 								//Nombre de clase Selection
-		Crandom ran64(1);  								//Semilla del generador aleatorio
+		Crandom ran64(6);  								//Semilla del generador aleatorio
 		double R = 5.0;  								//Radio del bichin
 		int Ehijos = 20;   								//Min Energy for reproduction
 		double Thijos = 40; 							//Min Time for reproduction

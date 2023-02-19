@@ -27,15 +27,15 @@ def Haldanes(time,proms,sd,gene):
     
     return H
 
+'''
 Hal_data=Haldanes(time,proms,Sd,1)
 print(Hal_data)
 time_h=time[1:]
 plt.plot(time_h,Haldanes(time,proms,Sd,0))
 plt.show()
-
 '''
+
 for gene in range(8):
     plt.plot(time,proms[gene],label=str(gene)+' gen')
 plt.legend()
 plt.show()
-'''
