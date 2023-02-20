@@ -11,6 +11,7 @@ ofstream grafica;
 ofstream Nodes;
 ofstream Edges;
 ofstream Hald;
+ofstream gene_data;
 
 //---------- Constantes --------
 const int P = 8;            		// Numero de parámetros de los bichines
@@ -355,12 +356,13 @@ class Selection
 
 					}
 			}
-    	double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2){
-      double sum=0.0;
-      for(int ii=0; ii<P;ii++) 
-				{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
-      return sum;
-    }
+    	double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2)
+			{
+			double sum=0.0;
+			for(int ii=0; ii<P;ii++) 
+						{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
+			return sum;
+    		}
 		void Genetic_Nodes(Bichin *Bichos)
 			{
 				Nodes<<"id,gen_predominante\n";
@@ -447,6 +449,28 @@ class Selection
 				Hald<<"\n";	
 
 
+			}
+		void Genetic_out(int time,Bichin *Bichos)
+			{	
+				string name1;
+				name1="Genes_datos/genes_"+to_string(time)+".csv";
+				gene_data.open(name1);
+
+				for(int ii=0;ii<Ni;ii++)
+					{
+						if(Bichos[ii].Alive())
+							{	
+								gene_data<<to_string(ii);
+								for(int jj=0;jj<P;jj++)
+									{
+										gene_data<<","<<Bichos[ii].Gene_value(jj);
+									}
+								gene_data<<"\n";
+							}
+					}
+				gene_data.close();
+
+				
 			}
 
 		string Direction(int dir)
@@ -661,17 +685,21 @@ int main(void)
 			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
 			//cout<<total_bio+Energy_bank<<"\n";
 
-			if(t%200==0)
+			if(t%100==0)
 				{	
-					name="Nodos/Nodos"+to_string(t)+".csv";
-					Nodes.open(name);
+					//name="Nodos/Nodos"+to_string(t)+".csv";
+					//Nodes.open(name);
 					//Fate.Genetic_Nodes(Bichitos);
-					Nodes.close();
-					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado\n";
-					name2="Edges/Edges"+to_string(t)+".csv";
-					Edges.open(name2);
+					//Nodes.close();
+					
+					//name2="Edges/Edges"+to_string(t)+".csv";
+					//Edges.open(name2);
 					//Fate.Genetic_Edges(Bichitos, 7);
-					Edges.close();
+					//Edges.close();
+					
+					Fate.Genetic_out(t,Bichitos);
+
+					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado\n";
 					cout<<"std dev gen "<<gene<<": "<<Fate.Std_gene(Bichitos,gene)<<"\n";
 					Fate.Haldane(t,Bichitos);
 				}
