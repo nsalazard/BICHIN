@@ -24,12 +24,12 @@ const int Nfood = 10000;  			// Numero de maximo comida | Nunca debe ser alcanza
 int E_inicial = 10;  				// Energía inicial de la comida
 int Nlive = 100;  					// Numero inicial de bichines
 int Energy_bank = 0; 				// El banco temporal de energia
-int Biome_energy=50000;				// Evita un bug con el colocamiento de la comida
+int Biome_energy=65000;				// Evita un bug con el colocamiento de la comida
 									// Como buena practica  Biome_energy<Nfood*E_inicial; 
 									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 const int food_dis=2;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
-const int selec = 0; 				// Permite que todos los genes inicien con las mismas probabilidades 
+const int selec = 1; 				// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -99,6 +99,12 @@ class Bichin
 						for (int ii = 0; ii < P; ii++){
 							moves[ii] = 0.125;
 						}
+					}
+					if(selec ==1){
+						moves[0]=1;
+						for(int ii=1;ii<P;ii++)
+							{moves[ii]=0;}
+
 					}
 					else{
 						//LLena moves[] con porcentajes aleatorios tal que su suma de 1
