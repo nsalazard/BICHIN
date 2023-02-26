@@ -39,7 +39,7 @@ elif(index == 1):
 else:
     n_clus = 1
 
-kmeans = KMeans(n_clusters=n_clus).fit(X)
+kmeans = KMeans(n_clusters=n_clus, n_init = 6).fit(X)
 centroids = kmeans.cluster_centers_
 print(centroids)
 
@@ -47,7 +47,7 @@ print(centroids)
 labels = kmeans.predict(X)
 # Getting the cluster centers
 C = kmeans.cluster_centers_
-colores=['blue','cyan']
+colores=['purple','cyan', 'red','blue']
 asignar=[]
 for row in labels:
     asignar.append(colores[row])
@@ -55,7 +55,7 @@ for row in labels:
 fig2 = plt.figure()
 ax = fig2.add_subplot(projection='3d')
 ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=asignar,s=5)
-ax.scatter(C[:, 0], C[:, 1], C[:, 2], marker='*', c="purple", s=20)
+ax.scatter(C[:, 0], C[:, 1], C[:, 2], marker='*', c="pink", s=20)
 
 ax.set_title("Data Analysis")
 ax.set_xlabel('PC1')
