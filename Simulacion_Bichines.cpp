@@ -29,7 +29,7 @@ int Biome_energy=65000;				// Evita un bug con el colocamiento de la comida
 									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 const int food_dis=2;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
-const int selec = 1; 				// Permite que todos los genes inicien con las mismas probabilidades 
+const int selec = 0; 				// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -100,6 +100,7 @@ class Bichin
 							moves[ii] = 0.125;
 						}
 					}
+
 					if(selec ==1){
 						moves[0]=1;
 						for(int ii=1;ii<P;ii++)
@@ -461,15 +462,17 @@ class Selection
 				string name1;
 				name1="Genes_datos/genes_"+to_string(time)+".csv";
 				gene_data.open(name1);
-
+				//gene_data<<"name,PC1,PC2,PC\n";
 				for(int ii=0;ii<Ni;ii++)
 					{
 						if(Bichos[ii].Alive())
 							{	
-								gene_data<<to_string(ii);
+								
 								for(int jj=0;jj<P;jj++)
 									{
-										gene_data<<","<<Bichos[ii].Gene_value(jj);
+										gene_data<<Bichos[ii].Gene_value(jj);
+										if((jj<P-1))
+											{gene_data<<",";}
 									}
 								gene_data<<"\n";
 							}
@@ -652,7 +655,7 @@ int main(void)
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
 		Selection Fate; 								//Nombre de clase Selection
-		Crandom ran64(6);  								//Semilla del generador aleatorio
+		Crandom ran64(3);  								//Semilla del generador aleatorio
 		double R = 5.0;  								//Radio del bichin
 		int Ehijos = 20;   								//Min Energy for reproduction
 		double Thijos = 40; 							//Min Time for reproduction
