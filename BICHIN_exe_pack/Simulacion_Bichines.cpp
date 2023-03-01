@@ -7,7 +7,7 @@
 #include <memory>
 using namespace std;
 ofstream salida;
-ofstream grafica;
+//ofstream grafica;
 ofstream Nodes;
 ofstream Edges;
 ofstream Hald;
@@ -17,7 +17,7 @@ ofstream gene_data;
 const int P = 8;            		// Numero de parámetros de los bichines
 const int L =700;           		// Espacio 2L*2L
 const double K = 10;        		// Distancia recorrida en cada mov. por el bichin
-const double TMAX = 40000;			// Tiempo de dibujo
+// Tiempo de dibujo
 const double E_gordo = 50;			// Energía a partir de la cual bichin no puede comer
 const int Ni = 4000; 				// Numero maximo de bichines (?)
 const int Nfood = 10000;  			// Numero de maximo comida | Nunca debe ser alcanzado.
@@ -27,7 +27,7 @@ int Energy_bank = 0; 				// El banco temporal de energia
 int Biome_energy=65000;				// Evita un bug con el colocamiento de la comida
 									// Como buena practica  Biome_energy<Nfood*E_inicial; 
 									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
-const int food_dis=2;	
+int food_dis;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
 const int selec = 0; 				// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
@@ -647,15 +647,19 @@ void StartBlender(int t)
 		salida << t << "\t";
 	}
 //-----------  Programa Principal --------------
-int main(void)
+int main(int argc, char **argv)
 	{	
+		food_dis=stoi(argv[1]);
+		int rand_seed=stoi(argv[2]);
+		const double TMAX = stoi(argv[3]);
 		salida.open("console_out.gp");
-		grafica.open("poblacion.txt");
+		//grafica.open("poblacion.txt");
 		Hald.open("Haldanes.txt");
+		
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
 		Selection Fate; 								//Nombre de clase Selection
-		Crandom ran64(3);  								//Semilla del generador aleatorio
+		Crandom ran64(rand_seed);  								//Semilla del generador aleatorio
 		double R = 5.0;  								//Radio del bichin
 		int Ehijos = 20;   								//Min Energy for reproduction
 		double Thijos = 40; 							//Min Time for reproduction
@@ -708,8 +712,8 @@ int main(void)
 					
 					Fate.Genetic_out(t,Bichitos);
 
-					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado\n";
-					cout<<"std dev gen "<<gene<<": "<<Fate.Std_gene(Bichitos,gene)<<"\n";
+					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado. Poblacion: "<<Nlive<<"\n";
+					//cout<<"std dev gen "<<gene<<": "<<Fate.Std_gene(Bichitos,gene)<<"\n";
 					Fate.Haldane(t,Bichitos);
 				}
 			
@@ -775,14 +779,14 @@ int main(void)
 					}
 				}
 
-			grafica<<t<<" "<<Nlive<<"\n";
+			//grafica<<t<<" "<<Nlive<<"\n";
 
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 
 		}
 		salida.close();
-		grafica.close();
+		//grafica.close();
 		Hald.close();
 		return 0;
 	}

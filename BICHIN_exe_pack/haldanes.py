@@ -37,5 +37,20 @@ plt.show()
 
 for gene in range(8):
     plt.plot(time,proms[gene],label=str(gene)+' gen')
+plt.xlabel('Tiempo (clicks)')
+plt.ylabel('proporcion de cada gen en el genoma (%)')
+plt.title('Evolucion de la distribucion genomica a lo largo del tiempo ')
 plt.legend()
-plt.show()
+plt.savefig('promedios_genes.png')
+plt.clf()
+plt.close()
+
+for gene in range(8):
+    plt.plot(time,Sd[gene],label=str(gene)+' gen')
+plt.xlabel('Tiempo (clicks)')
+plt.ylabel('Desviacion std de los genes (u)')
+plt.title('Evolucion de la distribucion genomica a lo largo del tiempo ')
+plt.legend()
+plt.savefig('Stv_genes.png')
+plt.clf()
+plt.close()
