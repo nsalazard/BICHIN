@@ -27,13 +27,15 @@ def Haldanes(time,proms,sd,gene):
     
     return H
 
-'''
+
 Hal_data=Haldanes(time,proms,Sd,1)
-print(Hal_data)
+#print(Hal_data)
 time_h=time[1:]
 plt.plot(time_h,Haldanes(time,proms,Sd,0))
-plt.show()
-'''
+plt.xlabel('Time (clicks)')
+plt.ylabel('Computed Haldanes (u)')
+plt.savefig('tasa_evolutiva.png',bbox_inches='tight')
+
 
 for gene in range(8):
     plt.plot(time,proms[gene],label=str(gene)+' gene')

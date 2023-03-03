@@ -4,7 +4,10 @@ time=1000
 seed=5
 clus= ./IMG/Clusters_0.png
 
-all: Stv_genes.png promedios_genes.png $(clus)
+all: Stv_genes.png promedios_genes.png $(clus) tasa_evolutiva.png
+
+tasa_evolutiva.png: haldanes.py
+	python haldanes.py
 
 $(clus):Clusters.py
 	python .\Clusters.py $(time)
