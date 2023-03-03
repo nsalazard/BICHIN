@@ -1,6 +1,7 @@
 # i dont like makefiles
+
 time=1000
-seed=2
+seed=5
 clus= ./IMG/Clusters_0.png
 
 all: Stv_genes.png promedios_genes.png $(clus)
