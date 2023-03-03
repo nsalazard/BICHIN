@@ -8,17 +8,66 @@ import sys
 	
 TMAX=int(sys.argv[1])
 
-
+tick=100
 
 pca=PCA(n_components=3) #objeto PCA
-data2=pd.read_csv(f'Genes_datos/genes_{TMAX-100}.csv', header = None)
+data2=pd.read_csv(f'Genes_datos/genes_{TMAX-tick}.csv', header = None)
 data3=data2.T
 scaled_data = preprocessing.scale(data3.T)
 pca.fit(scaled_data)
 
+pci=[]
+pci_np_i=[]
+pci_np_val=[]
+for i in range(3):
+  carga_genes= pd.Series(pca.components_[i])
+  organizado_carga_gen=carga_genes
+  pci.append(organizado_carga_gen.to_frame())
+  pci_np_i.append(pci[i].index.to_numpy(copy=True).reshape(-1,1))
+  pci_np_val.append(pci[i].to_numpy())
+
+pci_np_datos=[]
+for i in range(3):
+  q=np.concatenate((pci_np_i[i],pci_np_val[i]),axis=1)
+  pci_np_datos.append(q)
+
+
+datos=np.stack((pci_np_datos[0],pci_np_datos[1],pci_np_datos[2]))
+genes_pca=[]
+for i in range(8):
+  p=(np.absolute(datos[:,i,1]).tolist())
+  genes_pca.append(p)
+
+
+barWidth = 0.25
+fig = plt.subplots(figsize =(12, 8),dpi=300)
+ 
+
+br1 = np.arange(len(genes_pca[0]))
+colores=['darkviolet',
+         'lightcoral','firebrick','darkred',
+         'darkorange',
+         'darkgreen','limegreen','lightgreen'
+]
+separacion=4
+
+x=1
+
+
+for i in range(8):
+  x0=x+i*barWidth
+  br=[x0,x0+1*separacion,x0+2*separacion]
+  plt.bar(br,genes_pca[i] ,color=colores[i], width = barWidth,edgecolor ='grey', label =f'Gene{i}')
+
+plt.xticks([1.75,5.75,9.75],['PC1','PC2','PC3'])
+plt.ylabel('Component Load Scores')
+plt.title('Absolute value of the linear decomposition of PCA')
+plt.legend()
+plt.savefig('dist_PCA.png',bbox_inches='tight')
+plt.clf()
 
 print('corre')
-tick=100
+
 times=int(TMAX/tick)
 for i in range(times):
 	time=i*tick
