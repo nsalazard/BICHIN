@@ -1,10 +1,15 @@
 # i dont like makefiles
 
-time=1000
-seed=5
+time=20000
+seed=2
 clus= ./IMG/Clusters_0.png
+config=2
 
-all: Stv_genes.png promedios_genes.png $(clus) tasa_evolutiva.png
+all: Stv_genes.png promedios_genes.png $(clus) tasa_evolutiva.png dist_PCA.png
+
+
+dist_PCA.png:
+	python PCA_Data.py
 
 tasa_evolutiva.png: haldanes.py
 	python haldanes.py
@@ -20,7 +25,7 @@ Stv_genes.png : Haldanes.txt haldanes.py
 	python haldanes.py
 
 Haldanes.txt: sim_bichin.exe
-	./sim_bichin.exe 2 $(seed) $(time)
+	./sim_bichin.exe $(config) $(seed) $(time)
 
 sim_bichin.exe : Simulacion_Bichines.cpp | Genes_datos PCA_datos IMG
 	g++ Simulacion_Bichines.cpp -O3 -o sim_bichin

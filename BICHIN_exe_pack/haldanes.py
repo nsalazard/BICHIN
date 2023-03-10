@@ -28,13 +28,7 @@ def Haldanes(time,proms,sd,gene):
     return H
 
 
-Hal_data=Haldanes(time,proms,Sd,1)
-#print(Hal_data)
-time_h=time[1:]
-plt.plot(time_h,Haldanes(time,proms,Sd,0))
-plt.xlabel('Time (clicks)')
-plt.ylabel('Computed Haldanes (u)')
-plt.savefig('tasa_evolutiva.png',bbox_inches='tight')
+
 
 
 for gene in range(8):
@@ -55,4 +49,13 @@ plt.title('Evolution of the genomic distribution over time ')
 plt.legend()
 plt.savefig('Stv_genes.png',bbox_inches='tight')
 plt.clf()
+plt.close()
+
+Hal_data=Haldanes(time,proms,Sd,1)
+#print(Hal_data)
+time_h=time[1:]
+plt.plot(time_h,Haldanes(time,proms,Sd,0))
+plt.xlabel('Time (clicks)')
+plt.ylabel('Computed Haldanes (u)')
+plt.savefig('tasa_evolutiva.png',bbox_inches='tight')
 plt.close()
