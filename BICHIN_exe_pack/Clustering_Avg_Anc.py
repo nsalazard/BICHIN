@@ -109,15 +109,15 @@ for i in range(times):
 	for jj in range(n_clus):
 		for kk in range(8):
 			Gen_Avg[jj][kk] /= Gen_Avg[jj][9]
-	
-	if time > 0:
-		Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
+			
+			
+	# La funcion Distance va a devolver una matriz donde los indices representan los clusters actuales
+	# El numero en ese indice es el numero del cluster ancestro
+	#if time > 0:
+		#Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
 
 	Gen_Avg_OLD = np.copy(Gen_Avg)
-	n_old = n_clus
-
-	
-		
+	n_old = n_clus	
 		
 	#print('||||||||||||||||||')
 	#print(C+norm)
