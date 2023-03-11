@@ -28,13 +28,13 @@ def Distance(M_old, M_actual, n_old, n_clus):
 		for jj in range(n_old):
 			M_acaux = M_actual[jj,0:8]
 			M_Dis[ii][jj] = np.sum(np.abs(M_acaux- M_oaux))
-	for kk in range(n_clus):
+	for kk in range(n_clus*n_old):
 		mini = np.argmin(M_Dis)
 		r = mini//n_clus
 		c = mini-(n_clus*row)
-		M_Dis[r][c] = 100
-		if(ancestors[r] == 0): 
+		if(ancestors[r] == 0 and M_Dis[r][c] != 1000): 
 			ancestors[r] = c
+		M_Dis[r][c] = 1000
 	return ancestors
 
 
@@ -109,15 +109,17 @@ for i in range(times):
 	for jj in range(n_clus):
 		for kk in range(8):
 			Gen_Avg[jj][kk] /= Gen_Avg[jj][9]
-			
-			
+
 	# La funcion Distance va a devolver una matriz donde los indices representan los clusters actuales
 	# El numero en ese indice es el numero del cluster ancestro
 	#if time > 0:
-		#Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
+	#	Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
 
 	Gen_Avg_OLD = np.copy(Gen_Avg)
-	n_old = n_clus	
+	n_old = n_clus
+
+	
+		
 		
 	#print('||||||||||||||||||')
 	#print(C+norm)
@@ -138,3 +140,4 @@ for i in range(times):
 	plt.clf()
 	plt.close()
 	#plt.show()
+	
