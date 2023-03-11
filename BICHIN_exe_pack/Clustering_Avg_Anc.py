@@ -32,7 +32,7 @@ def Distance(M_old, M_actual, n_old, n_clus):
 		mini = np.argmin(M_Dis)
 		r = mini//n_clus
 		c = mini-(n_clus*row)
-		if(ancestors[r] == 0 and M_Dis[r][c] != 1000): 
+		if(ancestors[r] == 0 and M_Dis[r][c] != 1000 and c not in ancestors): 
 			ancestors[r] = c
 		M_Dis[r][c] = 1000
 	return ancestors
