@@ -33,18 +33,20 @@ for i in range(times):
 	# initialise kmeans
 		kmeans = KMeans(n_clusters=num_clusters, n_init= 60)
 		kmeans.fit(X)
-		cluster_labels = kmeans.labels_
-	# silhouette score
+		cluster_labels = kmeans.labels_ #A que cluster pertenece cada punto
+		
+	# silhouette scor
 		silhouette_avg.append(silhouette_score(X, cluster_labels))
 
 	plt.plot(range_n_clusters,silhouette_avg)
 	plt.xlabel("Values of K") 
 	plt.ylabel("Silhouette score") 
 	plt.title(f"Silhouette analysis For Optimal k {time}")
+	#plt.show()
 	plt.clf()
 	plt.close()
 
-	aux= max(silhouette_avg)
+	aux = max(silhouette_avg)
 	index = silhouette_avg.index(aux)
 	#print(index)
 
@@ -54,19 +56,25 @@ for i in range(times):
 	else:
 		n_clus = 1
 
-	kmeans = KMeans(n_clusters=n_clus, n_init = 6).fit(X)
+	kmeans = KMeans(n_clusters=n_clus, n_init = 60).fit(X) #Pregunta: Por que ahora se hacen menos intentos
 	centroids = kmeans.cluster_centers_
 	#print(centroids)
 
 	# Predicting the clusters
-	labels = kmeans.predict(X)
+	labels = kmeans.predict(X) #Predice en que cluster queda cada punto. Pregunta: Diferencia entre este y el de arriba (Dan distinto)
+	labelsdf=pd.DataFrame(labels, columns=["Cluster"])
+	data = pd.read_csv(f'PCA_datos_y_genes/PCA_eden_{time}.csv')
+	complete_data=pd.concat([labelsdf,data],axis=1)
+	complete_data.to_csv(f'Datos_Completos/Datos_{time}.csv',index=False)
+	
 	# Getting the cluster centers
 	C = kmeans.cluster_centers_
+	
 	
 	colores=['purple','cyan', 'red','blue']
 	asignar=[]
 	norm=np.double(4)
-	for row in labels:
+	for row in labels: #Preguntar
 
 		color=(np.absolute(C[row]+norm)/np.max(np.absolute(C[row]+norm)))
 		max_idx=encontraridx(color,np.max(color))

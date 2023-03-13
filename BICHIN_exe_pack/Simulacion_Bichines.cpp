@@ -7,7 +7,7 @@
 #include <memory>
 using namespace std;
 ofstream salida;
-//ofstream grafica;
+ofstream grafica;
 ofstream Nodes;
 ofstream Edges;
 ofstream Hald;
@@ -653,7 +653,7 @@ int main(int argc, char **argv)
 		int rand_seed=stoi(argv[2]);
 		const double TMAX = stoi(argv[3]);
 		salida.open("console_out.gp");
-		//grafica.open("poblacion.txt");
+		grafica.open("poblacion.txt");
 		Hald.open("Haldanes.txt");
 		
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
@@ -779,14 +779,14 @@ int main(int argc, char **argv)
 					}
 				}
 
-			//grafica<<t<<" "<<Nlive<<"\n";
+			grafica<<t<<" "<<Nlive<<"\n";
 
 			TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 
 		}
 		salida.close();
-		//grafica.close();
+		grafica.close();
 		Hald.close();
 		return 0;
 	}

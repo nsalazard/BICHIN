@@ -1,6 +1,6 @@
 # i dont like makefiles
 
-time=20000
+time=1000
 seed=2
 clus= ./IMG/Clusters_0.png
 config=2
@@ -34,6 +34,8 @@ Genes_datos:
 	mkdir Genes_datos
 PCA_datos: 
 	mkdir PCA_datos
+	mkdir Datos_Completos
+	mkdir PCA_datos_y_genes
 per_var: 
 	mkdir per_var
 IMG:
@@ -47,3 +49,6 @@ clean:
 	rmdir IMG
 	rmdir Genes_datos
 	rmdir PCA_datos
+	rmdir PCA_datos_y_genes
+	rmdir Datos_Completos
+

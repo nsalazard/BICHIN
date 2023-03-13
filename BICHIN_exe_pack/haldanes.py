@@ -4,7 +4,7 @@ import matplotlib.pylab as plt
 data=np.loadtxt('Haldanes.txt')
 
 
-sd=[]
+sd=[] #standard deviation
 prom=[]
 time=data[:,0]
 pop=data[:,1]
