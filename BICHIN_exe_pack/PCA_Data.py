@@ -13,8 +13,7 @@ tick=100
 pca=PCA(n_components=3) #objeto PCA
 data2=pd.read_csv(f'Genes_datos/genes_{TMAX-tick}.csv', header = None)
 data3=data2.T
-scaled_data = preprocessing.scale(data3.T) #Pregunta: Esto no acaba siendo data2?
-
+scaled_data = preprocessing.scale(data3.T) 
 pca.fit(scaled_data)
 
 pci=[]
@@ -46,7 +45,7 @@ fig = plt.subplots(figsize =(12, 8),dpi=300)
  
 
 br1 = np.arange(len(genes_pca[0]))
-print(br1)
+
 colores=['darkviolet',
          'lightcoral','firebrick','darkred',
          'darkorange',
@@ -56,7 +55,7 @@ separacion=4
 
 x=1
 
-print(genes_pca[0])
+
 for i in range(8):
   x0=x+i*barWidth
   br=[x0,x0+1*separacion,x0+2*separacion]
@@ -85,8 +84,7 @@ for i in range(times):
 	
 	per_var = np.round(pca.explained_variance_ratio_* 100, decimals=1) #explained variance ratio da un vector con la varianza de cada dimension
 	#print(np.sum(pca.explained_variance_ratio_))
-	#Pregunta: por que multiplicar por 100
-	#Pregunta: Por que son 10 filas?
+	
 	labels = ['PC' + str(x) for x in range(1,len(per_var)+1)]
 	
 	#plt.show()

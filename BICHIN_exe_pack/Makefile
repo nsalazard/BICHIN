@@ -3,24 +3,30 @@
 time=1000
 seed=2
 clus= ./IMG/Clusters_0.png
+avgclus=./IMG/gene_avg_Clusters_0.png
 config=2
 
-all: Stv_genes.png promedios_genes.png $(clus) tasa_evolutiva.png dist_PCA.png
+all: Stv_genes.png promedios_genes.png $(clus) tasa_evolutiva.png dist_PCA.png $(avgclus)
 
 
-dist_PCA.png:
-	python PCA_Data.py
+dist_PCA.png: Clusters.py PCA_datos\PCA_eden_0.csv
+	
 
 tasa_evolutiva.png: haldanes.py
-	python haldanes.py
 
 $(clus):Clusters.py
 	python .\Clusters.py $(time)
 
-Clusters.py: PCA_datos\PCA_eden_0.csv PCA_Data.py
+$(avgclus): PCA_datos\PCA_eden_0.csv Clusters.py|Ancestros Promedios_genes Datos_Completos
+	python .\Clustering_Characterization.py $(time)
+
+
+
+Clusters.py: PCA_datos\PCA_eden_0.csv | Datos_Completos
+
+PCA_datos\PCA_eden_0.csv: PCA_Data.py|Genes_datos
 	python PCA_Data.py $(time)
-PCA_datos\PCA_eden_0.csv:
-	python PCA_Data.py $(time)
+
 Stv_genes.png : Haldanes.txt haldanes.py
 	python haldanes.py
 
@@ -30,25 +36,43 @@ Haldanes.txt: sim_bichin.exe
 sim_bichin.exe : Simulacion_Bichines.cpp | Genes_datos PCA_datos IMG
 	g++ Simulacion_Bichines.cpp -O3 -o sim_bichin
 
+Ancestros: 
+	mkdir Ancestros
+
+Datos_Completos:
+	mkdir Datos_Completos
+
 Genes_datos:  
 	mkdir Genes_datos
-PCA_datos: 
-	mkdir PCA_datos
-	mkdir Datos_Completos
-	mkdir PCA_datos_y_genes
-per_var: 
-	mkdir per_var
+
 IMG:
 	mkdir IMG
+
+PCA_datos: 
+	mkdir PCA_datos
+	mkdir PCA_datos_y_genes
+
+Promedios_genes:
+	mkdir Promedios_Cluster
+
+
+per_var: 
+	mkdir per_var
+
+
 
 clean: 
 	del /S *.png
 	del /S *.txt
 	del /S *.csv
 	del /S *.gp
-	rmdir IMG
+	rmdir Ancestros
+	rmdir Datos_Completos
 	rmdir Genes_datos
+	rmdir IMG	
 	rmdir PCA_datos
 	rmdir PCA_datos_y_genes
-	rmdir Datos_Completos
+	rmdir Promedios_Cluster
+	
+	
 

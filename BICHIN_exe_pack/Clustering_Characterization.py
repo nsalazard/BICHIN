@@ -27,24 +27,40 @@ for i in range(times):
 
 #This is an attempt at relating the ancestors, under contruction
 # calculate the Euclidean distances between all pairs of rows
+
 for i in range(times-1):
     time=i*ticks
-    if(times==0):  
-        dataold = pd.read_csv(f'Promedios_Cluster/Datos_{time}.csv')
-    else:
-       dataold = pd.read_csv(f'Ancestros/Datos_{time}.csv')
-    datanew = pd.read_csv(f'Promedios_Cluster/Datos_{time+ticks}.csv')
-    distances = np.sqrt(((datanew.iloc[:, -8:].values[:, np.newaxis, :] - dataold.iloc[:, -8:].values) ** 2).sum(axis=2))
-# find the row pairs with the smallest distances
-    min_distances = np.min(distances, axis=1)
-    argmin_distances = np.argmin(distances, axis=1)
+    
+    if(time>0): 
+       
+        dataold = pd.read_csv(f'Ancestros/Datos_{time-ticks}.csv')
+        datanew = pd.read_csv(f'Promedios_Cluster/Datos_{time+ticks}.csv')
+        distances = np.sqrt(((datanew.iloc[:, -8:].values[:, np.newaxis, :] - dataold.iloc[:, -8:].values) ** 2).sum(axis=2))
+        # find the row pairs with the smallest distances
+        min_distances = np.min(distances, axis=1)
+        argmin_distances = np.argmin(distances, axis=1)
 
-# print the most similar row pairs
-    for i, j in enumerate(argmin_distances):      
-        closest_cluster = dataold.iloc[j]  # extract the closest row from dold
-        element_to_add = closest_cluster[0]
-        datanew.at[i, "closest_ancestor"] = element_to_add
-        datanew.to_csv(f'Ancestros/Datos_{time}.csv',index=False)
+        # print the most similar row pairs
+        for i, j in enumerate(argmin_distances):      
+            closest_cluster = dataold.iloc[j]  # extract the closest row from dold
+            element_to_add = closest_cluster[0]
+            datanew.at[i, "closest_ancestor"] = element_to_add
+            datanew.to_csv(f'Ancestros/Datos_{time}.csv',index=False)
+    else:
+       dataold = pd.read_csv(f'Promedios_Cluster/Datos_{time}.csv')
+       datanew = pd.read_csv(f'Promedios_Cluster/Datos_{time+ticks}.csv')
+       distances = np.sqrt(((datanew.iloc[:, -8:].values[:, np.newaxis, :] - dataold.iloc[:, -8:].values) ** 2).sum(axis=2))
+    # find the row pairs with the smallest distances
+       min_distances = np.min(distances, axis=1)
+       argmin_distances = np.argmin(distances, axis=1)
+
+    # print the most similar row pairs
+       for i, j in enumerate(argmin_distances):      
+            closest_cluster = dataold.iloc[j]  # extract the closest row from dold
+            element_to_add = closest_cluster[0]
+            datanew.at[i, "closest_ancestor"] = element_to_add
+            datanew.to_csv(f'Ancestros/Datos_{time}.csv',index=False)
+    
 
 
 for i in range(times):
