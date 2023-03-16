@@ -23,9 +23,9 @@ def Distance(M_old, M_actual, n_old, n_clus):
 	#Recordar la menor distancia en todo el sistema
 	M_Dis = np.zeros([n_clus, n_old])
 	ancestors =  np.zeros(n_clus)
-	for ii in range(n_clus):
+	for ii in range(n_old):
 		M_oaux = M_old[ii,0:8]
-		for jj in range(n_old):
+		for jj in range(n_clus):
 			M_acaux = M_actual[jj,0:8]
 			M_Dis[ii][jj] = np.sum(np.abs(M_acaux- M_oaux))
 	for kk in range(n_clus*n_old):
@@ -37,12 +37,12 @@ def Distance(M_old, M_actual, n_old, n_clus):
 		M_Dis[r][c] = 1000
 	return ancestors
 
-
+n_old=0
 for i in range(times):
 	time=i*ticks
 	print(time,f'{(time/TMAX)*100}%')
 	DF_PCA = pd.read_csv(f"PCA_datos/PCA_eden_{time}.csv")
-	DF_BICHINES = pd.read_csv(f"Genes_datos/Genetica_eden_{time}.csv") # Ni idea de tus carpetas
+	DF_BICHINES = pd.read_csv(f"Genes_datos/genes_{time}.csv", names=["F","L1","L2","L3","B","R3", "R2", "R1"]) # Ni idea de tus carpetas
 
 
 	PCA = np.array(DF_PCA[["PC1","PC2","PC3"]])
@@ -104,7 +104,9 @@ for i in range(times):
 		for ii in range(8):
 			Gen_Avg[row][ii] += BICHINES[num, ii]
 		Gen_Avg[row][9] += 1 # Guarda el numero de bichines en ese cluster
-		
+	print(Gen_Avg)
+	print("holi")
+	print(BICHINES[1,1])
 	#Divide en el numero total de bichines por cluster
 	for jj in range(n_clus):
 		for kk in range(8):
@@ -114,11 +116,13 @@ for i in range(times):
 	# El numero en ese indice es el numero del cluster ancestro
 	#if time > 0:
 	#	Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
-
+	#if(i>0):
+		#Distance(Gen_Avg_OLD,Gen_Avg, n_old, n_clus)
 	Gen_Avg_OLD = np.copy(Gen_Avg)
 	n_old = n_clus
-
+	#Distance(Gen_Avg_OLD, Gen_Avg, n_old, n_clus)
 	
+
 		
 		
 	#print('||||||||||||||||||')
