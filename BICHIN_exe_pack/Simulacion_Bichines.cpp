@@ -24,7 +24,7 @@ const int Nfood = 10000;  				// Numero de maximo comida | Nunca debe ser alcanz
 int E_inicial = 10;  					// Energía inicial de la comida
 int Nlive = 100;  						// Numero inicial de bichines
 int Energy_bank = 0; 					// El banco temporal de energia
-int Biome_energy=65000;					// Evita un bug con el colocamiento de la comida
+int Biome_energy=60000;					// Evita un bug con el colocamiento de la comida
 										// Como buena practica  Biome_energy<Nfood*E_inicial; 
 										// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=0;	
