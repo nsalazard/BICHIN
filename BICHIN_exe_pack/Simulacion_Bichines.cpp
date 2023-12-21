@@ -17,7 +17,7 @@ ofstream gene_data;
 const int P = 8;            			// Numero de parámetros de los bichines
 const int L =700;           			// Espacio 2L*2L
 const double K = 10;        			// Distancia recorrida en cada mov. por el bichin
-// Tiempo de dibujo
+
 const double E_gordo = 50;				// Energía a partir de la cual bichin no puede comer
 const int Ni = 4000; 					// Numero maximo de bichines (?)
 const int Nfood = 10000;  				// Numero de maximo comida | Nunca debe ser alcanzado.
@@ -96,9 +96,8 @@ class Bichin
 			void Genetic(Crandom &ran64)
 				{   
 					if(selec == 0){
-						for (int ii = 0; ii < P; ii++){
-							moves[ii] = 0.125;
-						}
+						for (int ii = 0; ii < P; ii++)
+							{moves[ii] = 0.125;}
 					}
 
 					if(selec ==1){
@@ -122,8 +121,9 @@ class Bichin
 						}
 					theta=M_PI/2*int(P*ran64.r());
 				}
-			void Print(void);
-			void Blender(void);
+			void Print(void)
+				{salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt -1";}
+
 			bool Alive(void) { return E > 0; }; //determina si vive
 			int Main_gene(void)
 				{
@@ -141,22 +141,11 @@ class Bichin
 						}
 					return imax;
 				}
-			double Gene_value(int gene)
-				{
-					return moves[gene];
-				}
+			double Gene_value(int gene){return moves[gene];}
 			friend class Selection;
 			friend class Food;
 	};
 
-void Bichin::Print(void)
-{
-  salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt -1";
-}
-void Bichin::Blender(void)
-{
-	salida << "\t" << x << "\t" << y;
-}
 
 //---------FOOD-------------------------------------
 class Food
@@ -214,43 +203,130 @@ class Food
 				E=E0;
 			}
 		void Feed(Bichin &Bicho)  //Alimente al bicho  
-		{
-
-			double dis = sqrt(pow(Bicho.x - x, 2.0) + pow(Bicho.y - y, 2.0));
-
-			if (dis < (R + Bicho.R) && E > 0.0 && Bicho.E < E_gordo)\
-				{ //Si el bicho y la comida se superponen y la energía de la comida es mayor a cero y la energía del bichin no es mayor a E_gordo
-					Bicho.E += E; //Aumente la energía del bicho en val 
-					E = 0; //Disminuya la energía del bicho en val
-					// salida << Bicho.E << "\n";
-					//cout<<"Comido \n";
-				}
-		}
-		void Print(void);   //Imprime la comida
+			{
+				double dis = sqrt(pow(Bicho.x - x, 2.0) + pow(Bicho.y - y, 2.0));
+				if (dis < (R + Bicho.R) && E > 0.0 && Bicho.E < E_gordo)//Si el bicho y la comida se superponen y la energía de la comida es mayor a cero y la energía del bichin no es mayor a E_gordo
+					{ 
+						Bicho.E += E; //Aumente la energía del bicho en val 
+						E = 0; //Disminuya la energía del bicho en val
+						// salida << Bicho.E << "\n";
+						//cout<<"Comido \n";
+					}
+			}
+		void Print(void){salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt 7";}
 		void Blender(void);
 
 		friend class Selection;
 		friend class Bichin;
 };
 
-void Food::Print(void)
-{
-  salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt 7";
-}
-void Food::Blender(void)
-{
-	salida << "\t" << x << "\t" << y;
-}
-
 //--- clase Selection----
 class Selection
 {
 	private:
 	public:
-		void Birth(Bichin &BichoP, Bichin &BichoH, double t,Crandom &ran64);  //Reproduce un bicho Padre en 2 bichos Hijos teniend en cuenta el tiempo de vida del padre. prob determina el gen que disminuye, prob 2 el que aumenta
-		void Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64);  //Distribuya la comida con una gausiana
-		void Uniform(Food *food, int N, double Rfood, Crandom &ran64);  //Distribuya la comida uniformemente
-		void RechargeFood(Food *food, Crandom &ran64); //Recargue la comida de manera aleatoria en el ambiente
+		void Birth(Bichin &BichoP, Bichin &BichoH, double t,Crandom &ran64)  //Reproduce un bicho Padre en 2 bichos Hijos teniend en cuenta el tiempo de vida del padre. prob determina el gen que disminuye, prob 2 el que aumenta
+			{
+				Nlive += 1; //Aumente el número de bichines vivos(que se dibujan)
+				int E_original=BichoP.E;
+
+				int prob1= int(P * ran64.r());
+				int prob2= int(P * ran64.r());
+				
+				BichoP.E = int(BichoP.E / 2); //Divida la energía del padre en 2
+				BichoH.Start(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R, ran64);//Inicialice al bichin hijo con la posición del padre, su energía (la mitad de la original), masa de 1, radio del padre y número aleatorio para determinar su genética(después se iguala a la del padre)
+
+				// Mutation
+				for (int ii = 0; ii < P; ii++) //Iguale genética del Hijo a la del padre
+					{BichoH.moves[ii] = BichoP.moves[ii];}
+
+				if(BichoH.moves[prob1] > 0.01)//Disminuya el gen prob
+					{BichoH.moves[prob1] -= 0.01;}
+
+				else
+					{
+						for(int ii=0;ii<P; ii++)
+							{
+								prob1= int(P * ran64.r());
+								if(BichoH.moves[prob1] > 0.01)
+									{BichoH.moves[prob1] -= 0.01;break;}
+							}	
+					}
+
+				BichoH.moves[prob2] += 0.01;  //Aumente el gen prob2
+			}
+		void Gaussian(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64)  //Distribuya la comida con una gausiana
+		{
+			int ix, iy;
+			int Ploted_energy=Biome_energy;
+			for (int ii = 0; ii < N; ii++)  //Se distribuyen N comidas
+			{
+				// Escogemos posición de la comida al azar segun una distribucion bigaussiana
+				ix = (int)ran64.gauss(mu, sigma);
+				iy = (int)ran64.gauss(mu, sigma);
+				// Evitamos las fronteras del ambiente
+				if (ix < -L)
+					ix = -L;
+				if (iy < -L)
+					iy = -L;
+				if (ix > (L))
+					ix = L;
+				if (iy > L)
+					iy = L;
+				food[ii].Start(ix, iy, E_inicial, Rfood); //Se inicializa la comida con posiciones al azar, Energia E_inicial, radio R_food, porción val
+				Ploted_energy-=E_inicial;
+				if(Ploted_energy<=0)
+					{break;};
+			}
+		}
+		void Uniform(Food *food, int N, double Rfood, Crandom &ran64)  //Distribuya la comida uniformemente
+		{
+			int ix, iy;
+			int  Ploted_energy=Biome_energy;
+
+			for (int ii = 0; ii < N; ii++)  //Se distribuyen N comidas
+				{
+					// Escogemos posición de la comida al azar segun una distribucion bigaussiana
+					ix =  2*L*ran64.r() - L;
+					iy =  2*L*ran64.r() - L;
+					// Evitamos las fronteras del ambiente
+					if (ix < -L)
+						{ix = -L;}
+					if (iy < -L)
+						{iy = -L;}
+					if (ix > L)
+						{ix = L;}
+					if (iy > L)
+						{iy = L;}
+					food[ii].Start(ix, iy, E_inicial, Rfood); //Se inicializa la comida con posiciones al azar, Energia E_inicial, radio R_food, porción val
+					
+					Ploted_energy-=E_inicial;
+					if(Ploted_energy<=0)
+						{break;};
+				}
+		}
+		void RechargeFood(Food *food, Crandom &ran64) //Recargue la comida de manera aleatoria en el ambiente
+			{
+				int index=0;
+				int Cn=0;
+				while (Energy_bank>E_inicial)
+					{	
+						//cout<<"ciclo\n";
+						index=int(Nfood*ran64.r());
+						if(food[index].GetE()==0)
+							{
+								food[index].ReStart(E_inicial,ran64,L/4,-L/4,sigma*2,sigma*2);
+								Energy_bank-=E_inicial;
+							}
+						Cn+=1.;
+						if(Cn*2>Nfood)
+							{
+								cout<<"Fallo en la distribucion de comida, re escribir Energia total \n";
+								break;
+								};
+						
+					}
+			};
 		int Biomass(Food *food, Bichin *Bichos)
 			{
 				int ii=0;
@@ -365,10 +441,10 @@ class Selection
 			}
     	double Dist_Taxi(Bichin &Bicho1, Bichin &Bicho2)
 			{
-			double sum=0.0;
-			for(int ii=0; ii<P;ii++) 
-						{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
-			return sum;
+				double sum=0.0;
+				for(int ii=0; ii<P;ii++) 
+					{sum+= abs(Bicho1.moves[ii]-Bicho2.moves[ii]);}
+				return sum;
     		}
 		void Genetic_Nodes(Bichin *Bichos)
 			{
@@ -398,15 +474,13 @@ class Selection
 						{
 							if(Bichos[ii].Alive() && Bichos[jj].Alive())
 								{
-								distancia=Dist_Taxi(Bichos[ii],Bichos[jj]);
-								peso=1/distancia;
-								if(distancia==0)
-									{peso=0;}
+									distancia=Dist_Taxi(Bichos[ii],Bichos[jj]);
+									peso=1/distancia;
+									if(distancia==0)
+										{peso=0;}
 
-								if(peso>threshold)
-									{Edges<<"B"<<ii<<","<<"B"<<jj<<","<<peso<<"\n";}
-								
-								
+									if(peso>threshold)
+										{Edges<<"B"<<ii<<","<<"B"<<jj<<","<<peso<<"\n";}	
 								}
 						}
 					}
@@ -416,9 +490,8 @@ class Selection
 				int oo=0;
 				double prom=0;
 				for(oo=0;oo<Nlive;oo++)
-					{
-						prom += Bichos[oo].Gene_value(gene);
-					}
+					{prom += Bichos[oo].Gene_value(gene);}
+
 				prom=prom/Nlive;
 				return prom;
 				
@@ -446,16 +519,12 @@ class Selection
 		void Haldane(int time,Bichin *Bichos)
 			{	
 				// H es una unidad sin dimensiones para cuantificar tasas evolutivas, https://earth.geology.yale.edu/~ajs/1993/11.1993.17Gingerich.pdf
-				
 				int gene=0;
 				Hald<<time<<" "<<Nlive<<" ";
 				for(gene=0;gene<P;gene++)
-					{
-						Hald<<Prom_gene(Bichos,gene)<<" "<<Std_gene(Bichos,gene)<<" ";
-					}
+					{Hald<<Prom_gene(Bichos,gene)<<" "<<Std_gene(Bichos,gene)<<" ";}
+
 				Hald<<"\n";	
-
-
 			}
 		void Genetic_out(int time,Bichin *Bichos)
 			{	
@@ -510,117 +579,6 @@ class Selection
 		friend class Food;
 };
 
-void Selection::Birth(Bichin &BichoP, Bichin &BichoH, double t, Crandom &ran64)
-{
-	Nlive += 1; //Aumente el número de bichines vivos(que se dibujan)
-	int E_original=BichoP.E;
-
-	int prob1= int(P * ran64.r());
-	int prob2= int(P * ran64.r());
-	
-	BichoP.E = int(BichoP.E / 2); //Divida la energía del padre en 2
-	BichoH.Start(BichoP.x, BichoP.y, BichoP.E, 1, BichoP.R, ran64);//Inicialice al bichin hijo con la posición del padre, su energía (la mitad de la original), masa de 1, radio del padre y número aleatorio para determinar su genética(después se iguala a la del padre)
-
-	//cout<<E_original<<" "<<BichoP.E+BichoH.E<<"-----\n";
-	// Mutation
-	for (int ii = 0; ii < P; ii++) //Iguale genética del Hijo a la del padre
-	{
-		BichoH.moves[ii] = BichoP.moves[ii];
-	}
-	if(BichoH.moves[prob1] > 0.01){
-		BichoH.moves[prob1] -= 0.01;  //Disminuya el gen prob
-	}
-  else{
-	for(int ii=0;ii<P; ii++){
-		prob1= int(P * ran64.r());
-		if(BichoH.moves[prob1] > 0.01){
-			BichoH.moves[prob1] -= 0.01;  //Disminuya el gen ii
-			break;
-		}
-	}	
-     }
-
-	BichoH.moves[prob2] += 0.01;  //Aumente el gen prob2
-}
-
-void Selection::Uniform(Food *food, int N, double Rfood, Crandom &ran64)
-{
-	int ix, iy;
-	int  Ploted_energy=Biome_energy;
-
-	for (int ii = 0; ii < N; ii++)  //Se distribuyen N comidas
-		{
-			// Escogemos posición de la comida al azar segun una distribucion bigaussiana
-			ix =  2*L*ran64.r() - L;
-			iy =  2*L*ran64.r() - L;
-			// Evitamos las fronteras del ambiente
-			if (ix < -L)
-				{ix = -L;}
-			if (iy < -L)
-				{iy = -L;}
-			if (ix > L)
-				{ix = L;}
-			if (iy > L)
-				{iy = L;}
-			food[ii].Start(ix, iy, E_inicial, Rfood); //Se inicializa la comida con posiciones al azar, Energia E_inicial, radio R_food, porción val
-			
-			Ploted_energy-=E_inicial;
-			if(Ploted_energy<=0)
-				{break;};
-		}
-}
-
-void Selection::Spread(Food *food, int N, double mu, double sigma, double Rfood, Crandom &ran64)
-{
-	int ix, iy;
-	int Ploted_energy=Biome_energy;
-	for (int ii = 0; ii < N; ii++)  //Se distribuyen N comidas
-	{
-		// Escogemos posición de la comida al azar segun una distribucion bigaussiana
-		ix = (int)ran64.gauss(mu, sigma);
-		iy = (int)ran64.gauss(mu, sigma);
-		// Evitamos las fronteras del ambiente
-		if (ix < -L)
-			ix = -L;
-		if (iy < -L)
-			iy = -L;
-		if (ix > (L))
-			ix = L;
-		if (iy > L)
-			iy = L;
-		food[ii].Start(ix, iy, E_inicial, Rfood); //Se inicializa la comida con posiciones al azar, Energia E_inicial, radio R_food, porción val
-		Ploted_energy-=E_inicial;
-		if(Ploted_energy<=0)
-			{break;};
-	}
-}
-
-void Selection::RechargeFood(Food *food, Crandom &ran64)
-{
-	int index=0;
-	int Cn=0;
-	while (Energy_bank>E_inicial)
-		{	
-			//cout<<"ciclo\n";
-			index=int(Nfood*ran64.r());
-			if(food[index].GetE()==0)
-				{
-					food[index].ReStart(E_inicial,ran64,L/4,-L/4,sigma*2,sigma*2);
-					Energy_bank-=E_inicial;
-				}
-			Cn+=1.;
-			if(Cn*2>Nfood)
-				{
-					cout<<"Fallo en la distribucion de comida, re escribir Energia total \n";
-					break;
-					};
-			
-		}
-};
-
-
-
-
 //----------------- Funciones de Animacion ----------
 void StartAnimacion(void)
 	{
@@ -642,10 +600,7 @@ void TermineCuadro(void)
 	{
 		salida << endl;
 	}
-void StartBlender(int t)
-	{
-		salida << t << "\t";
-	}
+
 //-----------  Programa Principal --------------
 int main(int argc, char **argv)
 	{	
@@ -659,18 +614,20 @@ int main(int argc, char **argv)
 						TMAX = stoi(argv[2]);
 						rand_seed = stoi(argv[3]);
 					}
+				else
+					{
+						food_dis=0;
+						TMAX=10000;
+						rand_seed=1;
+					}
 			}
 		catch (const std::exception &e) 
 			{
-				std::cerr << "Error: " << e.what() << std::endl;
+				std::cerr << "Error: command line arguments, there should be 3. food-distribution, simulation-time, seed and they must all be integers" << e.what() << std::endl;
 				return 1;
 			}
-		food_dis=stoi(argv[1]);
-		
-		
 
-
-		
+	
 		salida.open("console_out.gp");
 		grafica.open("poblacion.txt");
 		Hald.open("Haldanes.txt");
@@ -694,14 +651,11 @@ int main(int argc, char **argv)
 		bool Blive=false;
 		string name,name2;
 
-		for (int jj = 0; jj < Nlive; jj++)
+		for (int jj = 0; jj < Nlive; jj++)//Inicialice todos los bichines en el origen, 500 de energía, 1 de masa, radio R, ran64 para su genética
 			{
-				//Inicialice todos los bichines en el origen, 500 de energía, 1 de masa, radio R, ran64 para su genética
-
-				//INICIALIZA EN POSICIONES ALEATORIAS
 				double bix = 2*L*ran64.r() - L;
 				double biy = 2*L*ran64.r() - L;
-				Bichitos[jj].Start(bix, biy, E_inicial, 1, R, ran64);
+				Bichitos[jj].Start(bix, biy, E_inicial, 1, R, ran64);//INICIALIZA EN POSICIONES ALEATORIAS
 			}
 
 		Fate.food_distribution(food,int(Nfood/2),L/4,-L/4,sigma*2,sigma*2,Rfood,ran64,food_dis);
@@ -760,17 +714,14 @@ int main(int argc, char **argv)
 							}
 
 
-						for (int jj = 0; jj < Nfood; jj++)
-							{   //Para toda la comida, revise si puede alimentarse con ella
-								food[jj].Feed(Bichitos[ii]);
-							}
+						for (int jj = 0; jj < Nfood; jj++)//Para toda la comida, revise si puede alimentarse con ella
+							{food[jj].Feed(Bichitos[ii]);}
+
 						// if(Bichitos[ii].GetE()<10)
 						// 	{cout<<Bichitos[ii].GetE()<<"----------"<<"\n";}
 
-						if(Bichitos[ii].GetE()==0)
-							{Nlive-=1;
-							//cout<<"muerte-----------------------------\n";
-							}
+						if(Bichitos[ii].GetE()==0)//cout<<"muerte-----------------------------\n";
+							{Nlive-=1;}
 						
 						if(nn==Nlive)
 							{break;};
@@ -780,20 +731,17 @@ int main(int argc, char **argv)
 			InicieCuadro(); //Dibuje los bichines vivos y la comida viva
 
 			for (int ii = 0; ii < Nfood; ii++)
-				{	
-					if (food[ii].GetE() > 0)
-					{	
-						food[ii].Print();
-					}
+				{ if (food[ii].GetE() > 0)
+						{food[ii].Print();}
 				}
 			
 			for (int ii = 0; ii < Ni; ii++)
 				{
 					if (Bichitos[ii].Alive())
-					{	
-						live_counter+=1;
-						Bichitos[ii].Print();
-					}
+						{	
+							live_counter+=1;
+							Bichitos[ii].Print();
+						}
 				}
 
 			grafica<<t<<" "<<Nlive<<"\n";

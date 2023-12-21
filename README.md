@@ -1,10 +1,8 @@
 <div align="center">
 
 # BICHIN
-[![Contributors](https://img.shields.io/github/contributors/nsalazard/BICHIN)](https://github.com/nsalazard/BICHIN/graphs/contributors)
 
-
-<span style="color:red">B</span>iosimulación <span style="color:red">I</span>ntegrada de <span style="color:red">C</span>riaturas en <span style="color:red">H</span>ábitats <span style="color:red">IN</span>formáticos
+**B**iosimulación **I**ntegrada de **C**riaturas en **H**ábitats **IN**formáticos
 
 </div>
 
