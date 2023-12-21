@@ -23,7 +23,7 @@ To run the simulation, in the working directory you should have:
 Compile with any c++ compiler and you should get an executable. 
 If you wanted to see the evolution process like this.
 
-![Example Image](Resultados\Imagenes_readme\Jardin_eden.png "This is an example image")
+![Example Image](Resultados/Imagenes_readme/Jardin_eden.png "This is an example image")
 
 ## USO
 
