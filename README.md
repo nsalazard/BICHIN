@@ -1,6 +1,7 @@
 <div align="center">
 
 # BICHIN
+[![License: CC BY 4.0](https://licensebuttons.net/l/by/4.0/80x15.png)](https://creativecommons.org/licenses/by/4.0/)
 Author1, Author2
 <span style="color:red">B</span>iosimulación <span style="color:red">I</span>ntegrada de <span style="color:red">C</span>riaturas en <span style="color:red">H</span>ábitats <span style="color:red">IN</span>formáticos
 
@@ -19,26 +20,37 @@ To run the simulation, in the working directory you should have:
 - (optional) 2 empty folders named "Nodos" and "Edges" &rightarrow; Where nodes and edges data will be stored if the folders exist
 
 
+The food distribution in the simulation depends on one parameter:
+```cpp
+int food_dis;
+```
+it uses 0 as default and is changed as the first command line argument.
+| food_dis | Distribution  |
+| -------- | --------------| 
+| 0        | uniform       |
+| 1        | gaussian      | 
+| 2        | Garden of eden| 
 
-Compile with any c++ compiler and you should get an executable. 
+if running several scenarios, you may need to change the name of the files everytime you want to try a new scenario given the files will be rewriten.
+
+`TMAX` is the amount of time iterations the simulation will run for. 10 000 by default and is changed with the second command line argument.
+
+`rand_seed` is the seed for the random generator and is changed with the third command line argument, it has to be a integer.
+
+
+
+Compile with any c++ compiler and run as any other program. The executable outputs several files 
+
+
 If you wanted to see the evolution process like this.
 
-![Example Image](Resultados/Imagenes_readme/Jardin_eden.png "This is an example image")
+![Image of the simulation; Garden of eden](Resultados/Imagenes_readme/Jardin_eden.png "Map of the simulation")
 
-## USO
+You will need to open the .gp file created by the executable with [Gnuplot](http://www.gnuplot.info).
 
 
-En tanto las Simulacion_Bichines.cpp, ya está terminada y funcional. Necesitamos correrla en diferentes escenarios y extraer los datos para análisis estadístico, el entorno de ejecución necesita Random64.h, 2 carpetas, Nodos, Edges. 
-
-Para probar diferentes escenarios solo sería necesario cambiar la distribución de la comida. Esto tiene que suceder en 2 lugares, en Selection>food_distribution() y Food>ReStart(). Estas 2 funciones se encargan de la distribución inicial y redistribución de la comida en el mapa respectivamente y ambas dependen del parámetro. 
-
-```php
-int food_dis=I;
-```
-
-Por el momento existen 3 distribuciones implementadas para I=0; uniforme, I=1; gaussiana, I=2; Eden. 
-
-Creen nuevas instrucciones de distribución para diferentes valores de I, para que se puedan integrar todos al final en un solo código. Corran sus escenarios y en la carpeta de resultados abran una carpeta con el nombre de su escenario y pongan ahí sus resultados.
+## Run Time and population
+As with a real ecosystem there is a carrying capacity
 
 
 ## CANTIDAD DE BICHINES Y TIEMPO DE COMPUTO

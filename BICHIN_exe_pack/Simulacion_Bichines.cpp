@@ -27,7 +27,7 @@ int Energy_bank = 0; 					// El banco temporal de energia
 int Biome_energy=65000;					// Evita un bug con el colocamiento de la comida
 										// Como buena practica  Biome_energy<Nfood*E_inicial; 
 										// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
-int food_dis;	
+int food_dis=0;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
 const int selec = 0; 					// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
@@ -176,7 +176,7 @@ class Food
 		void ReStart(int E0,Crandom &ran64,double mux,double muy,double sigmax,double sigmay)
 			{	
 
-				if(food_dis==0)
+				if(food_dis==0) //uniform
 					{
 						x =  2*L*ran64.r() - L;
 						y =  2*L*ran64.r() - L;
@@ -649,9 +649,28 @@ void StartBlender(int t)
 //-----------  Programa Principal --------------
 int main(int argc, char **argv)
 	{	
+		double TMAX=10000;
+		int rand_seed=1;
+		try
+			{
+				if (argc >1)
+					{
+						food_dis=stoi(argv[1]);
+						TMAX = stoi(argv[2]);
+						rand_seed = stoi(argv[3]);
+					}
+			}
+		catch (const std::exception &e) 
+			{
+				std::cerr << "Error: " << e.what() << std::endl;
+				return 1;
+			}
 		food_dis=stoi(argv[1]);
-		int rand_seed=stoi(argv[2]);
-		const double TMAX = stoi(argv[3]);
+		
+		
+
+
+		
 		salida.open("console_out.gp");
 		grafica.open("poblacion.txt");
 		Hald.open("Haldanes.txt");
