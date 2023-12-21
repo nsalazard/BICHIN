@@ -14,22 +14,22 @@ ofstream Hald;
 ofstream gene_data;
 
 //---------- Constantes --------
-const int P = 8;            		// Numero de parámetros de los bichines
-const int L =700;           		// Espacio 2L*2L
-const double K = 10;        		// Distancia recorrida en cada mov. por el bichin
+const int P = 8;            			// Numero de parámetros de los bichines
+const int L =700;           			// Espacio 2L*2L
+const double K = 10;        			// Distancia recorrida en cada mov. por el bichin
 // Tiempo de dibujo
-const double E_gordo = 50;			// Energía a partir de la cual bichin no puede comer
-const int Ni = 4000; 				// Numero maximo de bichines (?)
-const int Nfood = 10000;  			// Numero de maximo comida | Nunca debe ser alcanzado.
-int E_inicial = 10;  				// Energía inicial de la comida
-int Nlive = 100;  					// Numero inicial de bichines
-int Energy_bank = 0; 				// El banco temporal de energia
-int Biome_energy=65000;				// Evita un bug con el colocamiento de la comida
-									// Como buena practica  Biome_energy<Nfood*E_inicial; 
-									// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
+const double E_gordo = 50;				// Energía a partir de la cual bichin no puede comer
+const int Ni = 4000; 					// Numero maximo de bichines (?)
+const int Nfood = 10000;  				// Numero de maximo comida | Nunca debe ser alcanzado.
+int E_inicial = 10;  					// Energía inicial de la comida
+int Nlive = 100;  						// Numero inicial de bichines
+int Energy_bank = 0; 					// El banco temporal de energia
+int Biome_energy=65000;					// Evita un bug con el colocamiento de la comida
+										// Como buena practica  Biome_energy<Nfood*E_inicial; 
+										// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
-const int selec = 0; 				// Permite que todos los genes inicien con las mismas probabilidades 
+const int selec = 0; 					// Permite que todos los genes inicien con las mismas probabilidades 
 //--- ------ Clases ------------
 class Bichin;
 class Selection;
@@ -107,19 +107,19 @@ class Bichin
 							{moves[ii]=0;}
 
 					}
-					else{
-						//LLena moves[] con porcentajes aleatorios tal que su suma de 1
-						int xx;
-						double sum = 0.0;
-						for (int ii = 0; ii < P; ii++){
-							xx = ran64.r() * 10.0;
-							moves[ii] = xx;
-							sum += moves[ii];
+					else//LLena moves[] con porcentajes aleatorios tal que su suma de 1	
+						{
+							int xx;
+							double sum = 0.0;
+							for (int ii = 0; ii < P; ii++)
+								{
+									xx = ran64.r() * 10.0;
+									moves[ii] = xx;
+									sum += moves[ii];
+								}
+							for (int ii = 0; ii < P; ii++)
+								{moves[ii] = moves[ii] / sum;}
 						}
-						for (int ii = 0; ii < P; ii++){
-							moves[ii] = moves[ii] / sum;
-						}
-					}
 					theta=M_PI/2*int(P*ran64.r());
 				}
 			void Print(void);
