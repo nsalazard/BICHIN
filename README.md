@@ -6,8 +6,24 @@ Author1, Author2
 
 </div>
 
-This is a simulation that shows the effect of the environment on darwinian evolution.
+This is a simulation that shows the effect of the environment on darwinian evolution. In particular it simulates macrophages in a sea of bacteria inspired by the work done in [Computer recreations](https://www.scientificamerican.com/article/computer-recreations-1989-05/) by A. K. Dewdney.
 
+The simulation shows the behavior of evolution given a system where macrophages move according to a set of numbers that codify the probability of moving in a certain direction (Genes). A macrophage has the hability to eat (gaining energy), move (consuming energy) and reproduce (consuming a lot of energy). When a macrophage's internal energy reaches zero, it dies. When it reproduces, the child macrophage will inherit energy from the parent as well as their Genes, but with a random modificacion to the values (simulating genetic mutation). 
+
+The simulation is finished and works as expected. It has been shown to replicate behaviors like r-k selection when changing gestation time, as wells a predator-prey population oscilation to name a few. 
+
+## Use
+To run the simulation, in the working directory you should have:
+- Simulacion_Bichines.cpp &rightarrow; where the simulation runs
+- Random64.h &rightarrow; The random number generator we used
+- (optional) 2 empty folders named "Nodos" and "Edges" &rightarrow; Where nodes and edges data will be stored if the folders exist
+
+
+
+Compile with any c++ compiler and you should get an executable. 
+If you wanted to see the evolution process like this.
+
+![Example Image](Resultados\Imagenes_readme\Jardin_eden.png "This is an example image")
 
 ## USO
 

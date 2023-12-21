@@ -5,7 +5,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
-using namespace std;
+
 ofstream salida;
 ofstream grafica;
 ofstream Nodes;
@@ -717,7 +717,7 @@ int main(int argc, char **argv)
 					Fate.Haldane(t,Bichitos);
 				}
 			
-			for (int ii = 0,nn=0; ii < Ni; ii++)  						//Para todos los bichines vivos
+			for (int ii = 0,nn=0; ii < Ni; ii++)  									//Para todos los bichines vivos
 				{	
 					if (Bichitos[ii].Alive())  										//Si el bichin esta vivo
 					{ nn++;
@@ -745,10 +745,8 @@ int main(int argc, char **argv)
 							{   //Para toda la comida, revise si puede alimentarse con ella
 								food[jj].Feed(Bichitos[ii]);
 							}
-						if(Bichitos[ii].GetE()<10)
-						{	
-						//cout<<Bichitos[ii].GetE()<<"----------"<<"\n";
-						}
+						// if(Bichitos[ii].GetE()<10)
+						// 	{cout<<Bichitos[ii].GetE()<<"----------"<<"\n";}
 
 						if(Bichitos[ii].GetE()==0)
 							{Nlive-=1;
