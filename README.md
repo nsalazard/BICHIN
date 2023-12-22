@@ -16,7 +16,8 @@ The simulation is finished and works as expected. It has been shown to replicate
 To run the simulation, in the working directory you should have:
 - Simulacion_Bichines.cpp &rightarrow; where the simulation runs
 - Random64.h &rightarrow; The random number generator we used
-- (optional) 2 empty folders named "Nodos" and "Edges" &rightarrow; Where nodes and edges data will be stored if the folders exist
+- (optional) empty folder called "Genes_datos" &rightarrow; to store .csv files about the genetics of the bugs.
+- (optional) 2 empty folders named "Nodos" and "Edges" &rightarrow; Where nodes and edges data about the genetic relations between bugs will be stored if the folders exist
 
 These file can be downloaded from the "BICHIN_exe_pack" folder in this repo.
 
@@ -69,7 +70,17 @@ This can be pretty intensive in terms of getting the data out of the simulation,
 
 Runtime can be improved in the future by changing writing formats from .txt files to .bin files and parallelizing the for loops. (we are working on this) 
 
-## Stability 
+## Simulation stability 
 During testing, we realized total extinction was a possibility, given random initial genes there needs to be enough food for the bugs to go around and feed themselves through random chance and reproducing before dying, this translated that there needs to be a high enough food density  for this to happen, the way to change this is the parameter `Biome_energy`. This is a measure of the total energy in the system, and all the energy that is not held by bugs is dispersed in the system as new bacteria so energy is constant. Increasing `Biome_energy` (60k by default) will result in a total higher carrying capacity but it may be needed to survive the first few hundred time steps while the initial adaptations kick in. 
+
+
+
+## Analysis
+There are multiple programs made to analyze the data outputted by the simulation. 
+
+
+<p align="center">
+  <img src="Wiki\diagrama_flujo.png" alt="Map of the simulation" width="800"/>
+</p>
 
 

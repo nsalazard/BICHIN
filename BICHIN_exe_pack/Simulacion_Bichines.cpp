@@ -17,7 +17,6 @@ ofstream gene_data;
 const int P = 8;            			// Numero de parámetros de los bichines
 const int L =700;           			// Espacio 2L*2L
 const double K = 10;        			// Distancia recorrida en cada mov. por el bichin
-
 const double E_gordo = 50;				// Energía a partir de la cual bichin no puede comer
 const int Ni = 4000; 					// Numero maximo de bichines (?)
 const int Nfood = 10000;  				// Numero de maximo comida | Nunca debe ser alcanzado.
@@ -36,6 +35,26 @@ class Selection;
 
 //---- interface e implementacion de clases ----
 //---- clase Bichin ---
+
+
+void displayProgressBar(float progress, int barWidth = 50, std::string line="=", float total=1.0)
+	{
+		std::cout << "[";
+		int pos = static_cast<int>(progress * barWidth);
+		for (int i = 0; i < barWidth; ++i) 
+			{
+				if (i < pos)
+					{std::cout << line;}
+				else if (i == pos)
+					{std::cout << ">";}
+				else
+					{std::cout << " ";}
+			}
+		std::cout << "] " << static_cast<int>(progress * 100.0)<< "%\r  "+std::to_string(total);
+		std::cout.flush();
+	}	
+
+
 class Bichin
 	{
 		private:
@@ -604,8 +623,10 @@ void TermineCuadro(void)
 //-----------  Programa Principal --------------
 int main(int argc, char **argv)
 	{	
-		double TMAX=10000;
+		double TMAX=0;
+		int TMAX_default=1000;
 		int rand_seed=1;
+		int data_tick=1;
 		try
 			{
 				if (argc >1)
@@ -617,7 +638,7 @@ int main(int argc, char **argv)
 				else
 					{
 						food_dis=0;
-						TMAX=10000;
+						TMAX=TMAX_default;
 						rand_seed=1;
 					}
 			}
@@ -635,7 +656,7 @@ int main(int argc, char **argv)
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food
 		Selection Fate; 								//Nombre de clase Selection
-		Crandom ran64(rand_seed);  								//Semilla del generador aleatorio
+		Crandom ran64(rand_seed);  						//Semilla del generador aleatorio
 		double R = 5.0;  								//Radio del bichin
 		int Ehijos = 20;   								//Min Energy for reproduction
 		double Thijos = 40; 							//Min Time for reproduction
@@ -651,7 +672,7 @@ int main(int argc, char **argv)
 		bool Blive=false;
 		string name,name2;
 
-		for (int jj = 0; jj < Nlive; jj++)//Inicialice todos los bichines en el origen, 500 de energía, 1 de masa, radio R, ran64 para su genética
+		for (int jj = 0; jj < Nlive; jj++)//Inicialice todos los bichines, ran64 para su genética
 			{
 				double bix = 2*L*ran64.r() - L;
 				double biy = 2*L*ran64.r() - L;
@@ -662,16 +683,17 @@ int main(int argc, char **argv)
 		
 		StartAnimacion(); // Dibujar
 
-
 		for (int t = 0, tdibujo = 0; t < TMAX; t ++)
-		{ 
+		{ 	
+
+			
 			//total_bio=Fate.Biomass(food,Bichitos);
 			//food_bio=Fate.food_Biomass(food);
 			//Bichos_bio=Fate.Bichos_Biomass(Bichitos);
 			//cout<<food_bio<<" "<<Bichos_bio<<" "<<Energy_bank<<"\n";
 			//cout<<total_bio+Energy_bank<<"\n";
 
-			if(t%100==0)
+			if(t%data_tick==0)
 				{	
 					//name="Nodos/Nodos"+to_string(t)+".csv";
 					//Nodes.open(name);
@@ -683,11 +705,11 @@ int main(int argc, char **argv)
 					//Fate.Genetic_Edges(Bichitos, 7);
 					//Edges.close();
 					
-					Fate.Genetic_out(t,Bichitos);
-
-					cout<<"t="<<t<<","<<t/TMAX*100<<"% completado. Poblacion: "<<Nlive<<"\n";
 					//cout<<"std dev gen "<<gene<<": "<<Fate.Std_gene(Bichitos,gene)<<"\n";
+
+					displayProgressBar(float(t)/TMAX,70,"=",t);
 					Fate.Haldane(t,Bichitos);
+					Fate.Genetic_out(t,Bichitos);
 				}
 			
 			for (int ii = 0,nn=0; ii < Ni; ii++)  									//Para todos los bichines vivos
