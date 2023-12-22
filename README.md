@@ -10,7 +10,7 @@ This is a simulation that shows the effect of the environment on darwinian evolu
 
 The simulation shows the behavior of evolution given a system where macrophages move according to a set of numbers that codify the probability of moving in a certain direction (Genes). A macrophage has the ability to eat (gaining energy), move (consuming energy) and reproduce (consuming a lot of energy). When a macrophage's internal energy reaches zero, it dies. When it reproduces, the child macrophage will inherit energy from the parent as well as their Genes, but with a random modification to the values (simulating genetic mutation). 
 
-The simulation is finished and works as expected. It has been shown to replicate behaviors like r-k selection when changing gestation time, as wells a predator-prey population oscitation to name a few. 
+The simulation is finished and works as expected. It has been shown to replicate behaviors like r-k selection when changing gestation time, as well as predator-prey population oscillation to name a few. 
 
 ## Use
 To run the simulation, in the working directory you should have:
