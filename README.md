@@ -58,11 +58,18 @@ You will need to open the .gp file created by the executable with [Gnuplot](http
 As with a real ecosystem there is a carrying capacity and this is the real variable in terms of compute time. For example, given Nfood = 20k, Biome_energy=50k, this system will have a carrying capacity of around 1700 bugs, without any optimization and running on a HDD this configuration takes around 2h for TMAX=10k. 
 
 
+<p align="center">
+  <img src="Resultados\Capacidad de Carga\poblacional_distintas_biomasas_Uniforme-1.png" alt="Map of the simulation" width="500"/>
+</p>
+This graph is of population as a function of time while changing the total biomass of the system. [Go to section](#Stability)
+
+
+
 This can be pretty intensive in terms of getting the data out of the simulation, with increasing numbers of bugs the longest operation is writing the data to disk, is recommended to use an SSD and to compile with the -O3 flag. 
 
 Runtime can be improved in the future by changing writing formats from .txt files to .bin files and parallelizing the for loops. (we are working on this) 
 
-## Stability
+## Stability 
 During testing, we realized total extinction was a possibility, given random initial genes there needs to be enough food for the bugs to go around and feed themselves through random chance and reproducing before dying, this translated that there needs to be a high enough food density  for this to happen, the way to change this is the parameter `Biome_energy`. This is a measure of the total energy in the system, and all the energy that is not held by bugs is dispersed in the system as new bacteria so energy is constant. Increasing `Biome_energy` (60k by default) will result in a total higher carrying capacity but it may be needed to survive the first few hundred time steps while the initial adaptations kick in. 
 
 
