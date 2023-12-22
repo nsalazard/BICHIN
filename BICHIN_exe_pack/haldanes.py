@@ -52,7 +52,7 @@ plt.clf()
 plt.close()
 
 Hal_data=Haldanes(time,proms,Sd,1)
-#print(Hal_data)
+
 time_h=time[1:]
 plt.plot(time_h,Haldanes(time,proms,Sd,0))
 plt.xlabel('Time (clicks)')

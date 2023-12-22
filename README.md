@@ -19,7 +19,7 @@ To run the simulation, in the working directory you should have:
 - (optional) empty folder called "Genes_datos" &rightarrow; to store .csv files about the genetics of the bugs.
 - (optional) 2 empty folders named "Nodos" and "Edges" &rightarrow; Where nodes and edges data about the genetic relations between bugs will be stored if the folders exist
 
-These file can be downloaded from the "BICHIN_exe_pack" folder in this repo.
+These files can be downloaded from the "BICHIN_exe_pack" folder in this repo.
 
 Compile with any c++ compiler and run as any other program. The executable outputs several files, we recommend to have at least 10GB of available storage if you want all the data to be stored. (we are working on this) 
 
@@ -29,7 +29,7 @@ The food distribution in the simulation depends on one parameter:
 ```cpp
 int food_dis;
 ```
-it uses 0 as default and is changed as the first command line argument.
+it uses 0 as default and is changed with a command line argument, "-d food_dis".
 | food_dis | Distribution  |
 | -------- | --------------| 
 | 0        | uniform       |
@@ -38,9 +38,19 @@ it uses 0 as default and is changed as the first command line argument.
 
 if running several scenarios, you may need to change the name of the files every time you want to try a new scenario given the files will be rewritten.
 
-`TMAX` is the amount of time iterations the simulation will run for. 10 000 by default and is changed with the second command line argument.
+`TMAX` is the amount of time iterations the simulation will run for. 10 000 by default and is changed  with a command line argument, "-t TMAX".
 
-`rand_seed` is the seed for the random generator and is changed with the third command line argument, it has to be a integer.
+`rand_seed` is the seed for the random generator and is changed with a command line argument, it has to be a integer, "-s seed".
+
+An example:
+```powershell
+.\simulation.exe -t 100000 -d 0 -s 145
+```
+This will run the simulation for 100k time-steps with uniform distribution and random seed of 145. Note that when a flag is not used, it uses the default value.
+```powershell
+.\simulation.exe 
+```
+Is also valid.
 
 
 

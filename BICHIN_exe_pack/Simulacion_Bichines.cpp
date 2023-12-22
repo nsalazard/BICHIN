@@ -5,6 +5,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <unistd.h>
 
 ofstream salida;
 ofstream grafica;
@@ -29,14 +30,39 @@ int Biome_energy=60000;					// Evita un bug con el colocamiento de la comida
 int food_dis=0;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
 const int selec = 0; 					// Permite que todos los genes inicien con las mismas probabilidades 
-//--- ------ Clases ------------
-class Bichin;
-class Selection;
-
-//---- interface e implementacion de clases ----
-//---- clase Bichin ---
 
 
+
+int TMAX=10000;
+int rand_seed=1;
+int data_tick=100;
+void handleFlags(int argc, char *argv[]) {
+	if(argc == 1) 
+	{
+		std::cout << "No flags were given. Using default values." << std::endl;
+		return;
+	}
+	int opt;
+
+	while((opt = getopt(argc, argv, "t:d:s:")) != -1)  
+	{  
+		switch(opt)  
+		{  
+			case 't': 
+				TMAX = std::stoi(optarg); 
+				break;  
+			case 'd':  
+				food_dis = std::stoi(optarg);
+				break;  
+			case 's':  
+				rand_seed = std::stoi(optarg);
+				break;  
+			case '?':  
+				std::cout << "unknown option: " << optopt << std::endl;  
+				break;  
+		}  
+	}  
+}
 void displayProgressBar(float progress, int barWidth = 50, std::string line="=", float total=1.0)
 	{
 		std::cout << "[";
@@ -54,6 +80,16 @@ void displayProgressBar(float progress, int barWidth = 50, std::string line="=",
 		std::cout.flush();
 	}	
 
+
+
+
+
+//--- ------ Clases ------------
+class Bichin;
+class Selection;
+
+//---- interface e implementacion de clases ----
+//---- clase Bichin ---
 
 class Bichin
 	{
@@ -623,31 +659,8 @@ void TermineCuadro(void)
 //-----------  Programa Principal --------------
 int main(int argc, char **argv)
 	{	
-		double TMAX=0;
-		int TMAX_default=1000;
-		int rand_seed=1;
-		int data_tick=1;
-		try
-			{
-				if (argc >1)
-					{
-						food_dis=stoi(argv[1]);
-						TMAX = stoi(argv[2]);
-						rand_seed = stoi(argv[3]);
-					}
-				else
-					{
-						food_dis=0;
-						TMAX=TMAX_default;
-						rand_seed=1;
-					}
-			}
-		catch (const std::exception &e) 
-			{
-				std::cerr << "Error: command line arguments, there should be 3. food-distribution, simulation-time, seed and they must all be integers" << e.what() << std::endl;
-				return 1;
-			}
 
+		handleFlags(argc, argv);
 	
 		salida.open("console_out.gp");
 		grafica.open("poblacion.txt");
