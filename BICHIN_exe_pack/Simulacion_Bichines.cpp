@@ -33,7 +33,7 @@ const int selec = 0; 					// Permite que todos los genes inicien con las mismas 
 
 
 
-int TMAX=10000;
+int TMAX=1000;
 int rand_seed=1;
 int data_tick=100;
 void handleFlags(int argc, char *argv[]) {
@@ -79,7 +79,14 @@ void displayProgressBar(float progress, int barWidth = 50, std::string line="=",
 		std::cout << "] " << static_cast<int>(progress * 100.0)<< "%\r  "+std::to_string(total);
 		std::cout.flush();
 	}	
-
+void write_config(std::string name)
+	{
+		std::ofstream config;
+		config.open(name);
+		config <<"TMAX,data_tick,food_dis,Biome_energy,E_incial,E_gordo\n";
+		config <<TMAX<<","<<data_tick<<","<<food_dis<<","<<Biome_energy<<","<<E_inicial<<","<<E_gordo<<"\n";
+		config.close();
+	}
 
 
 
@@ -661,10 +668,14 @@ int main(int argc, char **argv)
 	{	
 
 		handleFlags(argc, argv);
-	
+
+		write_config("config.csv");
+
+
 		salida.open("console_out.gp");
-		grafica.open("poblacion.txt");
+		grafica.open("population.txt");
 		Hald.open("Haldanes.txt");
+
 		
 		Bichin Bichitos[Ni]; 							//Array de bichines con numero maximo de bichines
 		Food food[Nfood];  								//Array de food con numero maximo de food

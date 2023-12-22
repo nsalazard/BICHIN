@@ -5,10 +5,9 @@ from sklearn import preprocessing
 import matplotlib.pylab as plt
 import sys 
 
-	
-TMAX=int(sys.argv[1])
-
-tick=100
+df = pd.read_csv('config.csv')
+TMAX=df['TMAX'][0]
+tick=df['data_tick'][0]
 
 pca=PCA(n_components=3) #objeto PCA
 data2=pd.read_csv(f'Genes_datos/genes_{TMAX-tick}.csv', header = None)

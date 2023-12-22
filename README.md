@@ -72,7 +72,7 @@ As with a real ecosystem there is a carrying capacity and this is the real varia
 <p align="center">
   <img src="Resultados\Capacidad de Carga\poblacional_distintas_biomasas_Uniforme-1.png" alt="Map of the simulation" width="500"/>
 </p>
-This graph is of population as a function of time while changing the total biomass of the system. [Go to section](#Stability)
+This graph is of population as a function of time while changing the total biomass of the system.
 
 
 
