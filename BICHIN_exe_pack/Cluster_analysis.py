@@ -26,9 +26,27 @@ def find_ancestor(centroid,prev_centroids):
 
 	return np.argmin(distances),(1/(np.min(distances)+0.1))
 
+def get_subgraphs(G):
+	subgraphs = []
+	for c in nx.connected_components(G):
+		subgraph = G.subgraph(c)
+		subgraphs.append(subgraph)
+	return subgraphs
 
+def node_list(subgraph):
+	nodes=[]
+	for node in subgraph.nodes():
+		nodes.append(node)
+	return sorted(nodes)
 
-	
+def split_list_based_on_first_letter(lst):
+    dict_letters = {}
+    for word in lst:
+        if word[0] not in dict_letters:
+            dict_letters[word[0]] = [word]
+        else:
+            dict_letters[word[0]].append(word)
+    return list(dict_letters.values())
 	
 Graph=nx.Graph()
 
@@ -66,22 +84,40 @@ for time in range(times):
 	prev_centroids=centroids
 		
 
-weights = [Graph[u][v]['weight'] for u, v in Graph.edges()]
-pos=nx.spring_layout(Graph)
-# # print(pos)
+subgraphs = get_subgraphs(Graph)
 
-# nx.draw(Graph,pos,with_labels=True)
-# plt.show()
+starting_height=0
 
-
-subgraphs = nx.connected_components(Graph)
-
-# Create a new igraph graph for each subgraph and create a layout for each
-for i, nodes in enumerate(subgraphs):
-	subgraph = Graph.subgraph(nodes)  # Create a subgraph from the nodes
-	G_ig = ig.Graph.from_networkx(subgraph)
-	G_ig.vs["label"] = list(subgraph.nodes())
+for subgraph in subgraphs:
 	
-	layout = G_ig.layout_reingold_tilford(mode="in", root=[0])
-	plot = ig.plot(G_ig, layout=layout)
-	plot.save(f'graph_{i}.png')
+	nodes=node_list(subgraph)
+	
+	nodes_time_dependent=split_list_based_on_first_letter(nodes)
+	
+
+	for time_step in nodes_time_dependent:
+		node_number=0
+		for node in time_step:
+			pos[node]=(pos[node][0],starting_height+node_number)
+			node_number+=1
+
+
+
+	lengths = [len(sublist) for sublist in nodes_time_dependent]
+
+
+	
+	subgraph_height=max(lengths)
+	starting_height+=subgraph_height
+
+	
+nx.draw(Graph,pos=pos,with_labels=True)
+plt.show()
+
+
+	
+
+	
+
+
+
