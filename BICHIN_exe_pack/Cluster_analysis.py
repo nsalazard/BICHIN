@@ -48,7 +48,7 @@ def split_list_based_on_first_letter(lst):
             dict_letters[word[0]].append(word)
     return list(dict_letters.values())
 	
-Graph=nx.Graph()
+Graph=nx.DiGraph()
 
 
 config = pd.read_csv('config.csv')
@@ -83,8 +83,8 @@ for time in range(times):
 
 	prev_centroids=centroids
 		
-
-subgraphs = get_subgraphs(Graph)
+Graph_undirected=Graph.to_undirected()
+subgraphs = get_subgraphs(Graph_undirected)
 
 starting_height=0
 
@@ -98,8 +98,24 @@ for subgraph in subgraphs:
 	for time_step in nodes_time_dependent:
 		node_number=0
 		for node in time_step:
-			pos[node]=(pos[node][0],starting_height+node_number)
+			# pos[node]=(pos[node][0],starting_height+node_number)
+
+			out_edges=Graph.out_edges(node)
+			children=[]
+			for edge in out_edges:
+				children.append(edge[1])
+
+			child_number=starting_height+node_number
+			for child in children:
+				pos[child]=(pos[child][0],child_number)
+				child_number+=1
+
+
+
+				
+
 			node_number+=1
+
 
 
 
