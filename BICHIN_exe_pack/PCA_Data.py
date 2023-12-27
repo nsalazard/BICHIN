@@ -3,14 +3,29 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 import matplotlib.pylab as plt
-import sys 
+import os
 
-df = pd.read_csv('config.csv')
-TMAX=df['TMAX'][0]
-tick=df['data_tick'][0]
+
+def check_folder(path):
+	if not os.path.exists(path):
+		os.makedirs(path)
+
+	
+results_folder='PCA_results/'
+
+config = pd.read_csv('config.csv')
+TMAX=config['TMAX'][0]
+tick=config['data_tick'][0]
+distribution=str(config['food_dis'][0])
+times=int(TMAX/tick)
+
+check_folder('PCA_results')
+check_folder(results_folder+'PCA_datos')
+check_folder(results_folder+'PCA_datos_y_genes')
+
 
 pca=PCA(n_components=3) #objeto PCA
-data2=pd.read_csv(f'Genes_datos/genes_{TMAX-tick}.csv', header = None)
+data2=pd.read_csv(f'Genes_datos/genes_{TMAX-tick}.csv', header = None) #lee el ultimo archivo de datos, el estado final del sistema se utiliza para calibrar el PCA
 data3=data2.T
 scaled_data = preprocessing.scale(data3.T) 
 pca.fit(scaled_data)
@@ -65,7 +80,7 @@ plt.xticks([1.75,5.75,9.75],['PC1','PC2','PC3'])
 plt.ylabel('Component Load Scores')
 plt.title('Absolute value of the linear decomposition of PCA')
 plt.legend()
-plt.savefig('dist_PCA.png',bbox_inches='tight')
+plt.savefig(results_folder+'dist_PCA_'+distribution+'.png',bbox_inches='tight')
 plt.clf()
 
 print('corre')
@@ -90,8 +105,9 @@ for i in range(times):
 	plt.close()
 	pca_df = pd.DataFrame(pca_data, columns=labels)
 	joined= pd.concat([pca_df,genes],axis=1)
-	pca_df.to_csv(f'PCA_datos/PCA_eden_{time}.csv',index=False)
-	joined.to_csv(f'PCA_datos_y_genes/PCA_eden_{time}.csv',index=False)
+	pca_df.to_csv(results_folder+ f'PCA_datos/PCA_{distribution}_{time}.csv',index=False)
+	joined.to_csv(results_folder+ f'PCA_datos_y_genes/PCA_{distribution}_{time}.csv',index=False)
+	
 	plt.scatter(pca_df.PC1,pca_df.PC2)
 
 	

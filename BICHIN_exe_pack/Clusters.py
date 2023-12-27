@@ -1,105 +1,71 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sb
 from sklearn.cluster import KMeans
-from sklearn.metrics import pairwise_distances_argmin_min 
 from sklearn.metrics import silhouette_score
-import sys 
+import os
 
-def encontraridx(array, value):# esta funcion empareja un valor al valor mas cercano en una lista dada y retorna el indice de la pareja encon
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return idx
+def check_folder(path):
+	if not os.path.exists(path):
+		os.makedirs(path)
 
-
-TMAX=int(sys.argv[1])
-
-ticks=100
-times=int(TMAX/ticks)
-
-for i in range(times):
-	time=i*ticks
-	print(time,f'{(time/TMAX)*100}%')
-	dataframe = pd.read_csv(f"PCA_datos/PCA_eden_{time}.csv")
-
-
-	X = np.array(dataframe[["PC1","PC2","PC3"]])
-
-	# Silhouette Method
+def find_silhouette_score(PCA_position):
 	range_n_clusters = range(2, 10)
 	silhouette_avg = []
-	for num_clusters in range_n_clusters:
-	# initialise kmeans
-		kmeans = KMeans(n_clusters=num_clusters, n_init= 60)
-		kmeans.fit(X)
+	centroids_list=[]
+	for n_clusters in range_n_clusters: #This for loop runs k-means for 2-10 clusters, the better segmentation is the one with the highest silhouette score
+		# initialise kmeans
+		kmeans = KMeans(n_clusters=n_clusters, n_init= 100)
+		kmeans.fit(PCA_position)
 		cluster_labels = kmeans.labels_ #A que cluster pertenece cada punto
-		
-	# silhouette scor
-		silhouette_avg.append(silhouette_score(X, cluster_labels))
+		centroids = kmeans.cluster_centers_
+		# silhouette scor
+		silhouette_avg.append(silhouette_score(PCA_position, cluster_labels))
+		centroids_list.append(centroids)
 
-	plt.plot(range_n_clusters,silhouette_avg)
-	plt.xlabel("Values of K") 
-	plt.ylabel("Silhouette score") 
-	plt.title(f"Silhouette analysis For Optimal k {time}")
-	#plt.show()
-	plt.clf()
-	plt.close()
+	return silhouette_avg,centroids_list
 
-	aux = max(silhouette_avg)
-	index = silhouette_avg.index(aux)
-	#print(index)
+range_n_clusters = range(2, 10)
 
-	if(index >= 0):
+results_folder='PCA_results/'
+clustering_folder='Clustering_results/'
+
+
+
+config = pd.read_csv('config.csv')
+TMAX=config['TMAX'][0]
+tick=config['data_tick'][0]
+distribution=str(config['food_dis'][0])
+times=int(TMAX/tick)
+
+for i in range(times):
+	time=i*tick
+
+	current_data=pd.read_csv(results_folder+f"PCA_datos/PCA_{distribution}_{time}.csv")
+	PCA_position = np.array(current_data[["PC1","PC2","PC3"]])
+
+	silhouette_avg,centroids_list = find_silhouette_score(PCA_position)
+	
+	index = silhouette_avg.index(max(silhouette_avg)) #This is the clustering with the best silhouette score
+	
+	
+	if(index >= 0): #If the best silhouette score is positive, then the clustering is better than random
 		n_clus = 2+index
+		centroids=centroids_list[index]
 
 	else:
 		n_clus = 1
+		centroids=centroids_list[0]
 
-	kmeans = KMeans(n_clusters=n_clus, n_init = 60).fit(X) #Pregunta: Por que ahora se hacen menos intentos
-	centroids = kmeans.cluster_centers_
-	#print(centroids)
 
-	# Predicting the clusters
-	labels = kmeans.predict(X) #Predice en que cluster queda cada punto. Pregunta: Diferencia entre este y el de arriba (Dan distinto)
-	labelsdf=pd.DataFrame(labels, columns=["Cluster"])
-	data = pd.read_csv(f'PCA_datos_y_genes/PCA_eden_{time}.csv')
-	complete_data=pd.concat([labelsdf,data],axis=1)
-	complete_data.to_csv(f'Datos_Completos/Datos_{time}.csv',index=False)
-	
-	# Getting the cluster centers
-	C = kmeans.cluster_centers_
-	
-	
-	colores=['purple','cyan', 'red','blue']
-	asignar=[]
-	norm=np.double(4)
-	for row in labels: #Preguntar
+	kmeans = KMeans(n_clusters=n_clus, n_init = 100).fit(PCA_position)
 
-		color=(np.absolute(C[row]+norm)/np.max(np.absolute(C[row]+norm)))
-		max_idx=encontraridx(color,np.max(color))
-		color[max_idx]=color[max_idx]*2
-		color=color/np.max(color)
-		if np.array_equal(color,np.ones((3))):
-			color=color/5
-		asignar.append(color)
-		
-	#print('||||||||||||||||||')
-	#print(C+norm)
-	fig2 = plt.figure()
-	ax = fig2.add_subplot(projection='3d')
-	#print('X:',type(X),'asignar:',len(asignar))
-	ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=asignar,s=5)
-	ax.scatter(C[:, 0], C[:, 1], C[:, 2], marker='*', c="pink", s=20)
+	labels = kmeans.predict(PCA_position)
+	labels_dataframe=pd.DataFrame(labels, columns=["Cluster"])
+	gene_data=pd.read_csv(results_folder+f"PCA_datos_y_genes/PCA_{distribution}_{time}.csv")
+	complete_data=pd.concat([labels_dataframe,gene_data],axis=1)
+	complete_data=complete_data.sort_values(by=['Cluster'])
+	complete_data.to_csv(clustering_folder+f"Clustering_{distribution}_{time}.csv", index=False)
 
-	ax.set_title(f"Data Analysis time: {time}")
-	ax.set_xlabel('PC1')
-	ax.set_ylabel('PC2')
-	ax.set_zlabel('PC3')
-	ax.set_xlim3d(-4, 4)
-	ax.set_ylim3d(-4, 4)
-	ax.set_zlim3d(-4, 4)
-	plt.savefig(f'IMG/Clusters_{time}.png',bbox_inches='tight')
-	plt.clf()
-	plt.close()
-	#plt.show()
+
+	np.savetxt(clustering_folder+f"centroids_{distribution}_{time}.csv", centroids, delimiter=",")

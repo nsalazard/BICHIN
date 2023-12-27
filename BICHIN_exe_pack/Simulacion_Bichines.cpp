@@ -7,7 +7,7 @@
 #include <memory>
 #include <unistd.h>
 
-ofstream salida;
+ofstream video_gp;
 ofstream grafica;
 ofstream Nodes;
 ofstream Edges;
@@ -36,6 +36,7 @@ const int selec = 0; 					// Permite que todos los genes inicien con las mismas 
 int TMAX=1000;
 int rand_seed=1;
 int data_tick=100;
+bool video=false;
 void handleFlags(int argc, char *argv[]) {
 	if(argc == 1) 
 	{
@@ -44,7 +45,7 @@ void handleFlags(int argc, char *argv[]) {
 	}
 	int opt;
 
-	while((opt = getopt(argc, argv, "t:d:s:")) != -1)  
+	while((opt = getopt(argc, argv, "t:d:s:v:i:")) != -1)  
 	{  
 		switch(opt)  
 		{  
@@ -56,7 +57,14 @@ void handleFlags(int argc, char *argv[]) {
 				break;  
 			case 's':  
 				rand_seed = std::stoi(optarg);
+				break;
+			case 'i':
+				data_tick=std::stoi(optarg);
+				break;
+			case 'v':
+				video=true;
 				break;  
+			
 			case '?':  
 				std::cout << "unknown option: " << optopt << std::endl;  
 				break;  
@@ -184,7 +192,7 @@ class Bichin
 					theta=M_PI/2*int(P*ran64.r());
 				}
 			void Print(void)
-				{salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt -1";}
+				{video_gp << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt -1";}
 
 			bool Alive(void) { return E > 0; }; //determina si vive
 			int Main_gene(void)
@@ -271,11 +279,11 @@ class Food
 					{ 
 						Bicho.E += E; //Aumente la energía del bicho en val 
 						E = 0; //Disminuya la energía del bicho en val
-						// salida << Bicho.E << "\n";
+						// video_gp << Bicho.E << "\n";
 						//cout<<"Comido \n";
 					}
 			}
-		void Print(void){salida << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt 7";}
+		void Print(void){video_gp << " , " << x << "+" << R << "*cos(t)," << y << "+" << R << "*sin(t)" << " lt 7";}
 		void Blender(void);
 
 		friend class Selection;
@@ -644,23 +652,23 @@ class Selection
 //----------------- Funciones de Animacion ----------
 void StartAnimacion(void)
 	{
-		salida << "set terminal gif animate" << endl;
-		salida << "set output 'Bichin.gif'" << endl;
-		salida << "unset key" << endl;
-		salida << "set xrange[" << -L << ":" << L << "]" << endl;
-		salida << "set yrange[" << -L << ":" << L << "]" << endl;
-		salida << "set size ratio -1" << endl;
-		salida << "set parametric" << endl;
-		salida << "set trange [0:7]" << endl;
-		salida << "set isosamples 12" << endl;
+		video_gp << "set terminal gif animate" << endl;
+		video_gp << "set output 'Bichin.gif'" << endl;
+		video_gp << "unset key" << endl;
+		video_gp << "set xrange[" << -L << ":" << L << "]" << endl;
+		video_gp << "set yrange[" << -L << ":" << L << "]" << endl;
+		video_gp << "set size ratio -1" << endl;
+		video_gp << "set parametric" << endl;
+		video_gp << "set trange [0:7]" << endl;
+		video_gp << "set isosamples 12" << endl;
 	}
 void InicieCuadro(void)
 	{
-		salida << "plot 0,0 ";
+		video_gp << "plot 0,0 ";
 	}
 void TermineCuadro(void)
 	{
-		salida << endl;
+		video_gp << endl;
 	}
 
 //-----------  Programa Principal --------------
@@ -672,7 +680,7 @@ int main(int argc, char **argv)
 		write_config("config.csv");
 
 
-		salida.open("console_out.gp");
+		video_gp.open("console_out.gp");
 		grafica.open("population.txt");
 		Hald.open("Haldanes.txt");
 
@@ -705,7 +713,7 @@ int main(int argc, char **argv)
 
 		Fate.food_distribution(food,int(Nfood/2),L/4,-L/4,sigma*2,sigma*2,Rfood,ran64,food_dis);
 		
-		StartAnimacion(); // Dibujar
+		if(video)StartAnimacion(); // Dibujar
 
 		for (int t = 0, tdibujo = 0; t < TMAX; t ++)
 		{ 	
@@ -774,29 +782,32 @@ int main(int argc, char **argv)
 					}
 				}
 
-			InicieCuadro(); //Dibuje los bichines vivos y la comida viva
+			if(video)InicieCuadro(); //Dibuje los bichines vivos y la comida viva
 
 			for (int ii = 0; ii < Nfood; ii++)
 				{ if (food[ii].GetE() > 0)
 						{food[ii].Print();}
 				}
 			
+			
 			for (int ii = 0; ii < Ni; ii++)
 				{
 					if (Bichitos[ii].Alive())
 						{	
 							live_counter+=1;
-							Bichitos[ii].Print();
+							if(video)
+								{Bichitos[ii].Print();}
+							
 						}
 				}
 
 			grafica<<t<<" "<<Nlive<<"\n";
 
-			TermineCuadro();
+			if(video)TermineCuadro();
 			Fate.RechargeFood(food, ran64);
 
 		}
-		salida.close();
+		video_gp.close();
 		grafica.close();
 		Hald.close();
 		return 0;
