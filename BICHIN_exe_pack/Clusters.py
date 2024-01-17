@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import os
@@ -10,18 +9,24 @@ def check_folder(path):
 		os.makedirs(path)
 
 def find_silhouette_score(PCA_position):
-	range_n_clusters = range(2, 10)
+	range_n_clusters = range(1, 10)
 	silhouette_avg = []
 	centroids_list=[]
 	for n_clusters in range_n_clusters: #This for loop runs k-means for 2-10 clusters, the better segmentation is the one with the highest silhouette score
-		# initialise kmeans
+
 		kmeans = KMeans(n_clusters=n_clusters, n_init= 100)
 		kmeans.fit(PCA_position)
-		cluster_labels = kmeans.labels_ #A que cluster pertenece cada punto
+		cluster_labels = kmeans.labels_ 
+		print(cluster_labels)
 		centroids = kmeans.cluster_centers_
-		# silhouette scor
-		silhouette_avg.append(silhouette_score(PCA_position, cluster_labels))
-		centroids_list.append(centroids)
+		print(centroids)
+		if len(set(cluster_labels)) == 1:
+			silhouette_avg.append(1)
+			centroids_list.append(centroids[0])
+			return silhouette_avg,centroids_list
+		else:
+			silhouette_avg.append(silhouette_score(PCA_position, cluster_labels))
+			centroids_list.append(centroids)
 
 	return silhouette_avg,centroids_list
 
@@ -40,7 +45,7 @@ times=int(TMAX/tick)
 
 for i in range(times):
 	time=i*tick
-
+	print(time)
 	current_data=pd.read_csv(results_folder+f"PCA_datos/PCA_{distribution}_{time}.csv")
 	PCA_position = np.array(current_data[["PC1","PC2","PC3"]])
 
