@@ -6,6 +6,7 @@
 #include <exception>
 #include <memory>
 #include <unistd.h>
+#include <string>
 
 ofstream video_gp;
 ofstream grafica;
@@ -29,7 +30,7 @@ int Biome_energy=60000;					// Evita un bug con el colocamiento de la comida
 										// Podria funcionar incluso si esta condicion no se cumple pero se corre un riesgo.
 int food_dis=0;	
 const double mu = 0.0, sigma = L / 4;  	// Parámetros distribución gaussiana de comida
-const int selec = 0; 					// Permite que todos los genes inicien con las mismas probabilidades 
+const int genetic_start = 0; 			// Permite que todos los genes inicien con las mismas probabilidades 
 
 
 
@@ -37,18 +38,20 @@ int TMAX=1000;
 int rand_seed=1;
 int data_tick=100;
 bool video=false;
+
 void handleFlags(int argc, char *argv[]) {
 	if(argc == 1) 
-	{
-		std::cout << "No flags were given. Using default values." << std::endl;
-		return;
-	}
+		{
+			std::cout << "No flags were given. Using default values." << std::endl;
+			return;
+		}
 	int opt;
 
 	while((opt = getopt(argc, argv, "t:d:s:v:i:")) != -1)  
 	{  
 		switch(opt)  
 		{  
+
 			case 't': 
 				TMAX = std::stoi(optarg); 
 				break;  
@@ -165,12 +168,12 @@ class Bichin
 			void T_zero(void) {t_live=0;};
 			void Genetic(Crandom &ran64)
 				{   
-					if(selec == 0){
+					if(genetic_start == 0){
 						for (int ii = 0; ii < P; ii++)
 							{moves[ii] = 0.125;}
 					}
 
-					if(selec ==1){
+					else if(genetic_start ==1){
 						moves[0]=1;
 						for(int ii=1;ii<P;ii++)
 							{moves[ii]=0;}

@@ -7,7 +7,7 @@ Basic_analysis.py: Haldanes.txt
 	python Basic_analysis.py 
 
 Haldanes.txt: sim_bichin.exe
-	./sim_bichin.exe
+	./sim_bichin.exe -t 10000
 
 
 sim_bichin.exe : Simulacion_Bichines.cpp | Genes_datos
