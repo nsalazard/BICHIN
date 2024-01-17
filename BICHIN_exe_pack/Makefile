@@ -16,9 +16,8 @@ sim_bichin.exe : Simulacion_Bichines.cpp | Genes_datos
 Genes_datos:  
 	mkdir Genes_datos
 
-
-clean: 
-	del /S *.png
-	del /S *.txt
-	del /S *.csv
-	del /S *.gp
+clean:
+	powershell -Command "Get-ChildItem -Path . -Include *.png -Recurse | Remove-Item -Force"
+	powershell -Command "Get-ChildItem -Path . -Include *.txt -Recurse | Remove-Item -Force"
+	powershell -Command "Get-ChildItem -Path . -Include *.csv -Recurse | Remove-Item -Force"
+	powershell -Command "Get-ChildItem -Path . -Include *.gp -Recurse | Remove-Item -Force"
