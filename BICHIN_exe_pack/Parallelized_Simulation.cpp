@@ -702,7 +702,7 @@ int main(int argc, char **argv)
 		int prob1, prob2;  								//variables auxiliares para las mutaciones
 		int gene=0;
 
-		int num_threads = 4;  // Puedes ajustar la cantidad de threads aquí
+		int num_threads = 6;  // Puedes ajustar la cantidad de threads aquí
 		
 		int total_bio=0,food_bio=0,Bichos_bio=0;
 

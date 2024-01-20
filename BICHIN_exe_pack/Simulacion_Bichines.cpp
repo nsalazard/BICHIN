@@ -602,7 +602,7 @@ class Selection
 		void Genetic_out(int time,Bichin *Bichos)
 			{	
 				string name1;
-				name1="Genes_datos/genes_"+to_string(time)+".csv";
+				name1="Genes_datos/genes_"+std::to_string(time)+".csv";
 				gene_data.open(name1);
 				//gene_data<<"name,PC1,PC2,PC\n";
 				for(int ii=0;ii<Ni;ii++)
